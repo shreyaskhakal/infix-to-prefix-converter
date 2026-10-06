@@ -1,29 +1,24 @@
-# Python Bytecode and Cache
+# Node
+node_modules
+dist
+dist-ssr
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-
-# Testing and Coverage
-.coverage
-htmlcov/
+*.pyc
 .pytest_cache/
-.mypy_cache/
 
-# IDE and Editor Configurations
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# OS Artifacts
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
-desktop.ini
-
-# Environment
-.env
-.venv
-env/
-venv/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
