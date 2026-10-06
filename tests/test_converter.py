@@ -123,6 +123,16 @@ class TestInfixToPrefixConverter(unittest.TestCase):
         self.assertTrue(res.is_valid)
         self.assertEqual(res.prefix_expression, "*A+BC")
 
+    def test_nested_parentheses(self):
+        # ((A+B)*(C-D)) -> *+AB-CD
+        res = InfixToPrefixConverter.convert("((A+B)*(C-D))")
+        self.assertTrue(res.is_valid)
+        self.assertEqual(res.prefix_expression, "*+AB-CD")
+
+        res_triple = InfixToPrefixConverter.convert("(((A+B)))")
+        self.assertTrue(res_triple.is_valid)
+        self.assertEqual(res_triple.prefix_expression, "+AB")
+
     def test_fraction_groups(self):
         # (A-B)/(C+D) -> /-AB+CD
         res = InfixToPrefixConverter.convert("(A-B)/(C+D)")
