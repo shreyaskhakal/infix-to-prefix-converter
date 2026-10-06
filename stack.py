@@ -22,6 +22,10 @@ class Stack:
 
     def __init__(self) -> None:
         self._items: List[Any] = []
+        self.push_count: int = 0
+        self.pop_count: int = 0
+        self.peek_count: int = 0
+        self.max_size: int = 0
 
     def push(self, item: Any) -> None:
         """
@@ -30,6 +34,9 @@ class Stack:
         Time Complexity: O(1) amortized
         """
         self._items.append(item)
+        self.push_count += 1
+        if len(self._items) > self.max_size:
+            self.max_size = len(self._items)
 
     def pop(self) -> Any:
         """
@@ -40,6 +47,7 @@ class Stack:
         """
         if self.is_empty():
             raise IndexError("pop from empty stack: Stack Underflow")
+        self.pop_count += 1
         return self._items.pop()
 
     def peek(self) -> Any:
@@ -51,6 +59,7 @@ class Stack:
         """
         if self.is_empty():
             raise IndexError("peek from empty stack")
+        self.peek_count += 1
         return self._items[-1]
 
     def is_empty(self) -> bool:
@@ -86,12 +95,30 @@ class Stack:
             return "Stack: [EMPTY]"
         return "Stack (Bottom -> Top): [" + ", ".join(str(x) for x in self._items) + "]"
 
-    def to_list(self) -> List[Any]:
+    def snapshot(self) -> List[Any]:
         """
-        Return a shallow copy of the current stack items from bottom to top.
-        Used for state snapshots and visualization without violating encapsulation.
+        Return a copy of the current stack items from bottom to top.
+        Guarantees that historical snapshots remain immutable even if the stack changes.
         """
         return list(self._items)
+
+    def to_list(self) -> List[Any]:
+        """
+        Alias for snapshot().
+        """
+        return self.snapshot()
+
+    def get_stats(self) -> dict:
+        """
+        Return actual operational metrics tracked by the Stack.
+        """
+        return {
+            "pushes": self.push_count,
+            "pops": self.pop_count,
+            "peeks": self.peek_count,
+            "max_size": self.max_size,
+            "current_size": self.size(),
+        }
 
     def __len__(self) -> int:
         return self.size()

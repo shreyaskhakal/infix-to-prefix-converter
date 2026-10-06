@@ -306,11 +306,15 @@ class StackActivityView(tk.Frame):
         self.table_frame = tk.Frame(self, bg=BG_CARD)
         self.table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 6))
 
-    def update_activity(self, activity_data: Dict[str, Dict[str, int]]) -> None:
+    def update_activity(
+        self,
+        activity_data: Dict[str, Dict[str, int]],
+        overall_stats: Optional[Dict[str, Any]] = None
+    ) -> None:
         for child in self.table_frame.winfo_children():
             child.destroy()
 
-        if not activity_data:
+        if not activity_data and not overall_stats:
             empty_lbl = tk.Label(
                 self.table_frame,
                 text="No conversion activity recorded yet.",
@@ -321,10 +325,33 @@ class StackActivityView(tk.Frame):
             empty_lbl.pack(pady=4)
             return
 
+        # Summary Banner for Section 23 Requirements:
+        # Pushes, Pops, Peeks, Maximum Stack Size, Total Steps
+        if overall_stats:
+            summary_frame = tk.Frame(self.table_frame, bg=BG_CONTAINER, padx=8, pady=4, highlightbackground=BORDER_COLOR, highlightthickness=1)
+            summary_frame.pack(fill="x", pady=(0, 6))
+
+            stat_items = [
+                ("Pushes", overall_stats.get("pushes", 0), ACCENT_GREEN),
+                ("Pops", overall_stats.get("pops", 0), ACCENT_RED),
+                ("Peeks", overall_stats.get("peeks", 0), TEXT_MUTED),
+                ("Max Stack Size", overall_stats.get("max_size", 0), ACCENT_CYAN),
+                ("Total Steps", overall_stats.get("total_steps", 0), ACCENT_YELLOW),
+            ]
+            for label, val, col in stat_items:
+                item_box = tk.Frame(summary_frame, bg=BG_CONTAINER)
+                item_box.pack(side="left", expand=True, padx=4)
+                tk.Label(item_box, text=label, font=("Segoe UI", 7, "bold"), bg=BG_CONTAINER, fg=TEXT_MUTED).pack()
+                tk.Label(item_box, text=str(val), font=("Consolas", 10, "bold"), bg=BG_CONTAINER, fg=col).pack()
+
+        # Detailed per-item grid
+        grid_frame = tk.Frame(self.table_frame, bg=BG_CARD)
+        grid_frame.pack(fill="both", expand=True)
+
         headers = ["Item", "Pushed", "Popped", "Peeked"]
         for col_idx, h in enumerate(headers):
             lbl = tk.Label(
-                self.table_frame,
+                grid_frame,
                 text=h,
                 font=("Segoe UI", 8, "bold"),
                 bg=BG_CARD,
@@ -335,7 +362,7 @@ class StackActivityView(tk.Frame):
         row = 1
         for item, stats in sorted(activity_data.items()):
             tk.Label(
-                self.table_frame,
+                grid_frame,
                 text=f"'{item}'",
                 font=("Consolas", 9, "bold"),
                 bg=BG_CARD,
@@ -343,7 +370,7 @@ class StackActivityView(tk.Frame):
             ).grid(row=row, column=0, padx=6, pady=1, sticky="w")
 
             tk.Label(
-                self.table_frame,
+                grid_frame,
                 text=f"{stats.get('push', 0)} times",
                 font=("Segoe UI", 8),
                 bg=BG_CARD,
@@ -351,7 +378,7 @@ class StackActivityView(tk.Frame):
             ).grid(row=row, column=1, padx=6, pady=1, sticky="w")
 
             tk.Label(
-                self.table_frame,
+                grid_frame,
                 text=f"{stats.get('pop', 0)} times",
                 font=("Segoe UI", 8),
                 bg=BG_CARD,
@@ -359,7 +386,7 @@ class StackActivityView(tk.Frame):
             ).grid(row=row, column=2, padx=6, pady=1, sticky="w")
 
             tk.Label(
-                self.table_frame,
+                grid_frame,
                 text=f"{stats.get('peek', 0)} times",
                 font=("Segoe UI", 8),
                 bg=BG_CARD,

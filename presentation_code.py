@@ -48,6 +48,10 @@ class Stack:
     def __init__(self) -> None:
         # Create an empty list to store stack elements internally.
         self._items: List[Any] = []
+        self.push_count: int = 0
+        self.pop_count: int = 0
+        self.peek_count: int = 0
+        self.max_size: int = 0
 
     def push(self, item: Any) -> None:
         """
@@ -55,6 +59,9 @@ class Stack:
         Time Complexity: O(1)
         """
         self._items.append(item)
+        self.push_count += 1
+        if len(self._items) > self.max_size:
+            self.max_size = len(self._items)
 
     def pop(self) -> Any:
         """
@@ -64,6 +71,7 @@ class Stack:
         """
         if self.is_empty():
             raise IndexError("Stack Underflow: Cannot pop from an empty stack.")
+        self.pop_count += 1
         return self._items.pop()
 
     def peek(self) -> Any:
@@ -74,6 +82,7 @@ class Stack:
         """
         if self.is_empty():
             raise IndexError("Stack Underflow: Cannot peek into an empty stack.")
+        self.peek_count += 1
         return self._items[-1]
 
     def is_empty(self) -> bool:
@@ -97,11 +106,28 @@ class Stack:
         """
         self._items.clear()
 
-    def to_list(self) -> List[Any]:
+    def snapshot(self) -> List[Any]:
         """
-        Return a copy of items from bottom to top for visual inspection.
+        Return an immutable snapshot copy of items from bottom to top.
         """
         return list(self._items)
+
+    def to_list(self) -> List[Any]:
+        """
+        Alias for snapshot().
+        """
+        return self.snapshot()
+
+    def get_stats(self) -> Dict[str, int]:
+        """
+        Return operational metrics tracked by the Stack.
+        """
+        return {
+            "pushes": self.push_count,
+            "pops": self.pop_count,
+            "peeks": self.peek_count,
+            "max_size": self.max_size,
+        }
 
     def display(self) -> str:
         """
@@ -442,6 +468,9 @@ class InfixToPrefixPresentation:
         prefix_str = "".join(prefix_tokens) if is_single else " ".join(prefix_tokens)
         postfix_str = "".join(postfix_output) if is_single else " ".join(postfix_output)
 
+        stats = stack.get_stats()
+        stats["total_steps"] = len(steps_record)
+
         return {
             "success": True,
             "infix": expression,
@@ -453,6 +482,7 @@ class InfixToPrefixPresentation:
             "postfix_expression": postfix_str,
             "prefix_expression": prefix_str,
             "steps": steps_record,
+            "stack_stats": stats,
         }
 
 
@@ -478,6 +508,7 @@ def draw_ascii_stack(stack_items: List[str]) -> str:
 
 def print_conversion_report(res: Dict[str, Any]) -> None:
     """Print the complete step-by-step conversion report in terminal."""
+    stats = res.get("stack_stats", {})
     print("\n" + "=" * 80)
     print("                    CONVERSION PIPELINE OVERVIEW")
     print("=" * 80)
@@ -486,6 +517,7 @@ def print_conversion_report(res: Dict[str, Any]) -> None:
     print(f" [3] Swapped Brackets :  {' '.join(res['swapped_tokens'])}")
     print(f" [4] Interm. Postfix  :  {res['postfix_expression']}")
     print(f" [5] Final PREFIX     :  {res['prefix_expression']}")
+    print(f" [6] Stack Metrics    :  Pushes={stats.get('pushes',0)} | Pops={stats.get('pops',0)} | Peeks={stats.get('peeks',0)} | Max Size={stats.get('max_size',0)}")
     print("=" * 80)
 
     print("\n" + "-" * 80)

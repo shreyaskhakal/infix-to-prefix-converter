@@ -771,7 +771,7 @@ class InfixToPrefixApp(tk.Tk):
             ))
 
         # Update Activity View
-        self.activity_view.update_activity(res.stack_activity)
+        self.activity_view.update_activity(res.stack_activity, res.stack_stats)
 
         # Update Result Card
         self.lbl_res_infix.configure(text=res.original_infix)

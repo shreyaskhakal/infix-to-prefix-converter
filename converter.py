@@ -391,6 +391,9 @@ class InfixToPrefixConverter:
             compact_prefix = " ".join(prefix_tokens)
             compact_postfix = " ".join(postfix_output)
 
+        overall_stats = stack.get_stats()
+        overall_stats["total_steps"] = len(all_steps)
+
         return ConversionResult(
             original_infix=expression,
             tokens=original_tokens,
@@ -403,6 +406,7 @@ class InfixToPrefixConverter:
             all_steps=all_steps,
             postfix_steps=postfix_steps,
             stack_activity=activity,
+            stack_stats=overall_stats,
             is_valid=True,
             error_message=None,
             error_position=None,

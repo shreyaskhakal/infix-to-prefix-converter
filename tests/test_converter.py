@@ -169,7 +169,50 @@ class TestInfixToPrefixConverter(unittest.TestCase):
         # '*' should be pushed
         self.assertIn("*", res.stack_activity)
         self.assertGreater(res.stack_activity["*"]["push"], 0)
+        # Check overall stats
+        self.assertIn("pushes", res.stack_stats)
+        self.assertIn("max_size", res.stack_stats)
+        self.assertGreaterEqual(res.stack_stats["max_size"], 1)
+
+
+class TestAlgorithmEventSystem(unittest.TestCase):
+    """Verify Section 30: Event-Driven Algorithm System Integrity."""
+
+    def test_sequential_step_numbers(self):
+        res = InfixToPrefixConverter.convert("(A+B)*C")
+        self.assertTrue(res.is_valid)
+        steps = res.all_steps
+        self.assertGreater(len(steps), 0)
+        for i, step in enumerate(steps):
+            self.assertEqual(step.step_number, i + 1, f"Step index {i} does not match {step.step_number}")
+
+    def test_event_types_occurrences(self):
+        res = InfixToPrefixConverter.convert("(A+B)*C")
+        self.assertTrue(res.is_valid)
+        op_types = [s.operation_type for s in res.all_steps]
+        self.assertIn("PUSH", op_types)
+        self.assertIn("POP", op_types)
+        self.assertIn("OUTPUT", op_types)
+        self.assertIn("MATCH", op_types)
+        self.assertIn("FINAL_POP", op_types)
+
+    def test_snapshots_immutability(self):
+        res = InfixToPrefixConverter.convert("A+B*C")
+        self.assertTrue(res.is_valid)
+        for step in res.all_steps:
+            self.assertIsInstance(step.stack_state, list)
+            self.assertIsInstance(step.output_state, list)
+            self.assertIsInstance(step.reason, str)
+            self.assertGreater(len(step.reason), 10)
+
+    def test_final_cleanup_pops(self):
+        res = InfixToPrefixConverter.convert("A+B+C")
+        self.assertTrue(res.is_valid)
+        # At least one final cleanup event
+        cleanup_steps = [s for s in res.all_steps if s.operation_type == "FINAL_POP"]
+        self.assertGreaterEqual(len(cleanup_steps), 1)
 
 
 if __name__ == "__main__":
     unittest.main()
+

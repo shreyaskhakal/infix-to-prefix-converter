@@ -110,6 +110,7 @@ class ConversionResult:
     all_steps: List[AlgorithmStep]
     postfix_steps: List[AlgorithmStep]  # Primary stack operation steps
     stack_activity: Dict[str, Dict[str, int]]  # Operator -> {'push': X, 'pop': Y, 'peek': Z}
+    stack_stats: Dict[str, Any] = field(default_factory=dict)  # {'pushes': X, 'pops': Y, 'peeks': Z, 'max_size': M, 'total_steps': N}
     is_valid: bool = True
     error_message: Optional[str] = None
     error_position: Optional[int] = None
