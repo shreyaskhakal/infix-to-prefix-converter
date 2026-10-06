@@ -1,0 +1,12 @@
+# =============================================================================
+# Interactive Infix-to-Prefix DSA Lab - Dependencies
+# =============================================================================
+# This project has ZERO external package dependencies.
+# It runs entirely using the Python standard library (tkinter, ttk, unittest, re).
+#
+# System Requirements:
+#   Python 3.11+ (Python 3.11, 3.12, 3.13 tested and verified)
+#   Tkinter (included with standard Python installations on Windows and macOS;
+#            on Linux Debian/Ubuntu install via: sudo apt-get install python3-tk)
+#
+# No external pip packages are required.
