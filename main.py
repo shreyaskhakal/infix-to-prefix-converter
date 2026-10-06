@@ -85,8 +85,53 @@ class InfixToPrefixApp(tk.Tk):
         self.screens: Dict[str, tk.Frame] = {}
         self._create_all_screens()
 
+        # Bind global presentation and stepping keyboard shortcuts
+        self._bind_keyboard_shortcuts()
+
         # Show Home screen initially
         self.show_screen("home")
+
+    def _bind_keyboard_shortcuts(self) -> None:
+        """Bind intuitive keyboard hotkeys for smooth classroom presentations."""
+        self.bind("<Right>", self._on_key_right)
+        self.bind("<Left>", self._on_key_left)
+        self.bind("<Home>", self._on_key_home)
+        self.bind("<End>", self._on_key_end)
+        self.bind("<space>", self._on_key_space)
+        self.bind("<Escape>", self._on_key_escape)
+        self.bind("<F1>", lambda e: self.show_screen("home"))
+        self.bind("<F2>", lambda e: self.show_screen("converter"))
+        self.bind("<F3>", lambda e: self.show_screen("whatif"))
+        self.bind("<F4>", lambda e: self.show_screen("challenge"))
+        self.bind("<F5>", lambda e: self.show_screen("viva"))
+        self.bind("<F11>", lambda e: self.toggle_presentation_mode())
+
+    def _is_text_entry_focused(self, event) -> bool:
+        return isinstance(event.widget, (tk.Entry, ttk.Entry, tk.Text))
+
+    def _on_key_right(self, event) -> None:
+        if not self._is_text_entry_focused(event):
+            self.step_next()
+
+    def _on_key_left(self, event) -> None:
+        if not self._is_text_entry_focused(event):
+            self.step_prev()
+
+    def _on_key_home(self, event) -> None:
+        if not self._is_text_entry_focused(event):
+            self.step_first()
+
+    def _on_key_end(self, event) -> None:
+        if not self._is_text_entry_focused(event):
+            self.step_last()
+
+    def _on_key_space(self, event) -> None:
+        if not self._is_text_entry_focused(event):
+            self.toggle_play()
+
+    def _on_key_escape(self, event) -> None:
+        if self.is_presentation_mode:
+            self.toggle_presentation_mode()
 
     def _configure_styles(self) -> None:
         style = ttk.Style(self)

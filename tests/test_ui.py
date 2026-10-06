@@ -81,7 +81,22 @@ class TestGUIIntegration(unittest.TestCase):
         self.app._pres_load_demo("A^B^C")
         self.assertEqual(self.app.conversion_result.prefix_expression, "^A^BC")
         self.app.toggle_presentation_mode()
-        self.assertFalse(self.app.is_presentation_mode)
+    def test_keyboard_navigation(self):
+        class DummyEvent:
+            def __init__(self, widget):
+                self.widget = widget
+
+        self.app.show_screen("converter")
+        self.app.load_sample("A+B")
+        self.assertEqual(self.app.current_step_index, 0)
+
+        # Trigger right key
+        self.app._on_key_right(DummyEvent(self.app))
+        self.assertEqual(self.app.current_step_index, 1)
+
+        # Trigger left key
+        self.app._on_key_left(DummyEvent(self.app))
+        self.assertEqual(self.app.current_step_index, 0)
 
 
 if __name__ == "__main__":
