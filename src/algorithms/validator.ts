@@ -135,8 +135,8 @@ export class Validator {
 
       // Consecutive operators
       if (currIsOp && nextIsOp) {
-        // Check if next is unary minus e.g. A * -B, A + -B, A / -B, A ^ -B
-        if (next.isUnary && next.value === '-' && curr.value !== '-') {
+        // Check if next is unary minus e.g. A * -B, A + -B, A - -B (A--B), A / -B, A ^ -B
+        if (next.isUnary && next.value === '-' && !curr.isUnary) {
           // Allowed: binary operator followed by unary minus
         } else {
           return {

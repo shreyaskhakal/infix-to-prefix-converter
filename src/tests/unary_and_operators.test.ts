@@ -96,6 +96,70 @@ describe('Unary Operators and Operator Combinations', () => {
     expect(res.prefix).toBe('^-A^BC');
   });
 
+  it('converts binary minus followed by unary minus: A--B -> -A-B', () => {
+    const res = InfixToPrefixConverter.convert('A--B');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('-A-B');
+  });
+
+  it('converts double unary negation with parentheses: -(-A) -> --A', () => {
+    const res = InfixToPrefixConverter.convert('-(-A)');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('--A');
+  });
+
+  it('converts unary plus preceding parenthesized unary minus: +(-A) -> +-A', () => {
+    const res = InfixToPrefixConverter.convert('+(-A)');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('+-A');
+  });
+
+  it('converts addition with parenthesized unary product: A+(-B*C) -> +A*-BC', () => {
+    const res = InfixToPrefixConverter.convert('A+(-B*C)');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('+A*-BC');
+  });
+
+  it('converts parenthesized group with exponentiation: -(A+B)^C -> ^-+ABC', () => {
+    const res = InfixToPrefixConverter.convert('-(A+B)^C');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('^-+ABC');
+  });
+
+  it('converts precedence variations A*B+C -> +*ABC, A+B*C^D -> +A*B^CD, A^B*C -> *^ABC', () => {
+    const res1 = InfixToPrefixConverter.convert('A*B+C');
+    expect(res1.prefix).toBe('+*ABC');
+
+    const res2 = InfixToPrefixConverter.convert('A+B*C^D');
+    expect(res2.prefix).toBe('+A*B^CD');
+
+    const res3 = InfixToPrefixConverter.convert('A^B*C');
+    expect(res3.prefix).toBe('*^ABC');
+  });
+
+  it('converts nested parentheses with products: A*(B+(C*D)) -> *A+B*CD', () => {
+    const res = InfixToPrefixConverter.convert('A*(B+(C*D))');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('*A+B*CD');
+  });
+
+  it('converts multi-character variables and numeric expressions accurately', () => {
+    const res1 = InfixToPrefixConverter.convert('ABC+DEF');
+    expect(res1.prefix).toBe('+ ABC DEF');
+
+    const res2 = InfixToPrefixConverter.convert('student_marks+college_fees');
+    expect(res2.prefix).toBe('+ student_marks college_fees');
+
+    const res3 = InfixToPrefixConverter.convert('100*25');
+    expect(res3.prefix).toBe('* 100 25');
+
+    const res4 = InfixToPrefixConverter.convert('12.5+3.14');
+    expect(res4.prefix).toBe('+ 12.5 3.14');
+
+    const res5 = InfixToPrefixConverter.convert('2(A+B)');
+    expect(res5.prefix).toBe('*2+AB');
+  });
+
   it('converts binary subtraction: A-B -> -AB', () => {
     const res = InfixToPrefixConverter.convert('A-B');
     expect(res.isValid).toBe(true);

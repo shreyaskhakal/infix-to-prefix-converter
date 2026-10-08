@@ -1,7 +1,7 @@
 # Infix to Prefix Converter — Interactive DSA Lab & Learning Platform
 
 [![CI Pipeline](https://github.com/shreyaskhakal/infix-to-prefix-converter/actions/workflows/ci.yml/badge.svg)](https://github.com/shreyaskhakal/infix-to-prefix-converter/actions)
-[![Tests](https://img.shields.io/badge/tests-111%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-119%20passed-brightgreen.svg)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)]()
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
@@ -21,11 +21,11 @@ An interactive, production-grade Data Structures & Algorithms visualizer and lea
    - Character-exact syntax validation with precise error position pointers and human-readable diagnostics.
    - Comprehensive tokenization supporting:
      - Multi-digit numbers (`123.45`, `1000.001`)
-     - Descriptive identifiers (`price`, `total_price`, `variable_1`)
-     - Unary operators (`+A`, `-A`, `-A+B`, `+A+B`, `A+(-B)`, `A*(-B)`, `-(A+B)`, `+(A+B)`, `A^-B`, `A+-B`, `A/-B`)
+     - Descriptive identifiers (`price`, `total_price`, `variable_1`, `student_marks`)
+     - Unary operators (`+A`, `-A`, `-A+B`, `+A+B`, `A+(-B)`, `A*(-B)`, `-(A+B)`, `+(A+B)`, `A^-B`, `A+-B`, `A--B`, `A/-B`, `-(-A)`, `+(-A)`)
      - Implicit multiplication (`2(A+B)`, `A(B+C)`, `(A+B)(C+D)`)
      - Right-associative exponentiation (`A^B^C` $\to$ `^A^BC`)
-     - Unary precedence interaction with exponentiation (`-A^B` $\to$ `^-AB`, `-(A^B)` $\to$ `-^AB`)
+     - Unary precedence interaction with exponentiation (`-A^B` $\to$ `^-AB`, `-(A^B)` $\to$ `-^AB`, `-(A+B)^C` $\to$ `^-+ABC`)
 
 2. **Animated Stack Beaker (Strict LIFO)**
    - High-fidelity Framer Motion micro-animations representing push, pop, and peek operations.
