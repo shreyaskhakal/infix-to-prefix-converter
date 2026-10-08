@@ -1,7 +1,7 @@
 # Infix to Prefix Converter — Interactive DSA Lab & Learning Platform
 
 [![CI Pipeline](https://github.com/shreyaskhakal/infix-to-prefix-converter/actions/workflows/ci.yml/badge.svg)](https://github.com/shreyaskhakal/infix-to-prefix-converter/actions)
-[![Tests](https://img.shields.io/badge/tests-119%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-123%20passed-brightgreen.svg)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)]()
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
@@ -171,7 +171,7 @@ infix-to-prefix-converter/
 │   └── tests/
 │       ├── converter.test.ts          # 15 tests: core conversions & stack invariants
 │       ├── validator_tokenizer.test.ts# 16 tests: lexical scanning & syntax validation
-│       ├── unary_and_operators.test.ts# 43 tests: unary operators & complex expressions
+│       ├── unary_and_operators.test.ts# 66 tests: unary operators & complex expressions
 │       ├── practice_and_quiz.test.ts  # 9 tests: practice generator & quiz verification
 │       ├── property_and_stress.test.ts# 4 tests: property-based fuzzing & 5k stress test
 │       └── export_and_features.test.ts# 13 tests: CSV/JSON export & history safety
@@ -220,7 +220,7 @@ Open your browser at `http://localhost:5173`.
 ```bash
 npm test
 ```
-Executes all **100 automated Vitest unit, property, and stress tests** across the test suites.
+Executes all **123 automated Vitest unit, property, and stress tests** across the test suites.
 
 ### Code Quality & Linting
 ```bash

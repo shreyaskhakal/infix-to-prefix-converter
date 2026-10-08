@@ -143,6 +143,62 @@ describe('Unary Operators and Operator Combinations', () => {
     expect(res.prefix).toBe('*A+B*CD');
   });
 
+  it('converts all Phase 3 Unary Plus variations consistently', () => {
+    expect(InfixToPrefixConverter.convert('+A').prefix).toBe('+A');
+    expect(InfixToPrefixConverter.convert('+A+B').prefix).toBe('++AB');
+    expect(InfixToPrefixConverter.convert('A++B').prefix).toBe('+A+B');
+    expect(InfixToPrefixConverter.convert('A+-B').prefix).toBe('+A-B');
+    expect(InfixToPrefixConverter.convert('A-+B').prefix).toBe('-A+B');
+    expect(InfixToPrefixConverter.convert('A*+B').prefix).toBe('*A+B');
+    expect(InfixToPrefixConverter.convert('A/+B').prefix).toBe('/A+B');
+    expect(InfixToPrefixConverter.convert('A^+B').prefix).toBe('^A+B');
+    expect(InfixToPrefixConverter.convert('A(+B)').prefix).toBe('*A+B');
+    expect(InfixToPrefixConverter.convert('(+A)').prefix).toBe('+A');
+    expect(InfixToPrefixConverter.convert('+(A+B)').prefix).toBe('++AB');
+    expect(InfixToPrefixConverter.convert('++A').prefix).toBe('++A');
+    expect(InfixToPrefixConverter.convert('+++A').prefix).toBe('+++A');
+  });
+
+  it('converts all Phase 3 Unary Minus variations consistently', () => {
+    expect(InfixToPrefixConverter.convert('-A').prefix).toBe('-A');
+    expect(InfixToPrefixConverter.convert('-A+B').prefix).toBe('+-AB');
+    expect(InfixToPrefixConverter.convert('A--B').prefix).toBe('-A-B');
+    expect(InfixToPrefixConverter.convert('A+-B').prefix).toBe('+A-B');
+    expect(InfixToPrefixConverter.convert('A*-B').prefix).toBe('*A-B');
+    expect(InfixToPrefixConverter.convert('A/-B').prefix).toBe('/A-B');
+    expect(InfixToPrefixConverter.convert('A^-B').prefix).toBe('^A-B');
+    expect(InfixToPrefixConverter.convert('A(-B)').prefix).toBe('*A-B');
+    expect(InfixToPrefixConverter.convert('(-A)').prefix).toBe('-A');
+    expect(InfixToPrefixConverter.convert('-(A+B)').prefix).toBe('-+AB');
+    expect(InfixToPrefixConverter.convert('--A').prefix).toBe('--A');
+    expect(InfixToPrefixConverter.convert('---A').prefix).toBe('---A');
+  });
+
+  it('converts Phase 4 unary precedence with exponentiation and parentheses', () => {
+    expect(InfixToPrefixConverter.convert('-A^B').prefix).toBe('^-AB');
+    expect(InfixToPrefixConverter.convert('(-A)^B').prefix).toBe('^-AB');
+    expect(InfixToPrefixConverter.convert('A^-B').prefix).toBe('^A-B');
+    expect(InfixToPrefixConverter.convert('A^(-B)').prefix).toBe('^A-B');
+    expect(InfixToPrefixConverter.convert('-A^B^C').prefix).toBe('^-A^BC');
+    expect(InfixToPrefixConverter.convert('(-A)^B^C').prefix).toBe('^-A^BC');
+    expect(InfixToPrefixConverter.convert('-(A+B)^C').prefix).toBe('^-+ABC');
+    expect(InfixToPrefixConverter.convert('+(-A)').prefix).toBe('+-A');
+    expect(InfixToPrefixConverter.convert('-(-A)').prefix).toBe('--A');
+  });
+
+  it('converts Phase 5 tokenizer edge cases including implicit multiplication with unaries', () => {
+    expect(InfixToPrefixConverter.convert('A(B+C)').prefix).toBe('*A+BC');
+    expect(InfixToPrefixConverter.convert('2(A+B)').prefix).toBe('*2+AB');
+    expect(InfixToPrefixConverter.convert('(A+B)(C+D)').prefix).toBe('*+AB+CD');
+    expect(InfixToPrefixConverter.convert('A(-B)').prefix).toBe('*A-B');
+    expect(InfixToPrefixConverter.convert('(-A)(-B)').prefix).toBe('*-A-B');
+    expect(InfixToPrefixConverter.convert('2(-A+B)').prefix).toBe('*2+-AB');
+    expect(InfixToPrefixConverter.convert('12.5(A+B)').prefix).toBe('* 12.5 + A B');
+    expect(InfixToPrefixConverter.convert('A2').prefix).toBe('A2');
+    expect(InfixToPrefixConverter.convert('variable_1').prefix).toBe('variable_1');
+    expect(InfixToPrefixConverter.convert('total_price').prefix).toBe('total_price');
+  });
+
   it('converts multi-character variables and numeric expressions accurately', () => {
     const res1 = InfixToPrefixConverter.convert('ABC+DEF');
     expect(res1.prefix).toBe('+ ABC DEF');

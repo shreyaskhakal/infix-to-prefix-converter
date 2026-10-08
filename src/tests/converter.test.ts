@@ -48,7 +48,7 @@ describe('Tokenizer and Validator', () => {
     const valid = InfixToPrefixConverter.convert('A+B*C');
     expect(valid.isValid).toBe(true);
 
-    const consecutiveOp = InfixToPrefixConverter.convert('A++B');
+    const consecutiveOp = InfixToPrefixConverter.convert('A+*B');
     expect(consecutiveOp.isValid).toBe(false);
     expect(consecutiveOp.error?.message).toMatch(/cannot appear immediately after/);
 
