@@ -34,99 +34,99 @@ export const OperationPanel: React.FC<OperationPanelProps> = ({
     switch (actionType) {
       case 'push':
       case 'push_paren':
-        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+        return 'bg-[#10B981]/15 text-[#10B981] border-[#10B981]/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]';
       case 'pop':
       case 'pop_paren':
-        return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+        return 'bg-[#EF4444]/15 text-[#EF4444] border-[#EF4444]/40 shadow-[0_0_8px_rgba(239,68,68,0.2)]';
       case 'output':
-        return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+        return 'bg-[#06B6D4]/15 text-[#06B6D4] border-[#06B6D4]/40 shadow-[0_0_8px_rgba(6,182,212,0.2)]';
       case 'pop_remaining':
-        return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+        return 'bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/40 shadow-[0_0_8px_rgba(245,158,11,0.2)]';
       default:
-        return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40';
+        return 'bg-[#6366F1]/15 text-[#C0C1FF] border-[#6366F1]/40';
     }
   };
 
   return (
-    <div className="bg-slate-900/50 dark:bg-slate-900/80 rounded-2xl border border-slate-800 p-5 shadow-xl flex flex-col gap-4">
+    <div className="bg-[#111318] rounded-lg border border-[#27272A] p-5 shadow-xl flex flex-col gap-4 text-[#F8FAFC]">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-3 border-b border-[#27272A]">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center">
+          <div className="w-7 h-7 rounded bg-[#6366F1]/15 text-[#C0C1FF] flex items-center justify-center border border-[#6366F1]/30">
             <HelpCircle className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm text-slate-100">Step Explanation & Logic</h3>
-            <p className="text-[11px] text-slate-400">Deterministic DSA State Engine</p>
+            <h3 className="font-semibold text-sm text-[#F8FAFC]">Step Logic & Why Engine</h3>
+            <p className="text-[10px] text-[#71717A] font-mono">DETERMINISTIC REASONING TELEMETRY</p>
           </div>
         </div>
 
-        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-          Step {stepNumber} of {totalSteps}
+        <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-[#18181B] text-[#71717A] border border-[#27272A]">
+          STEP <strong className="text-[#06B6D4]">{stepNumber}</strong> / {totalSteps}
         </span>
       </div>
 
       {/* Action and Token Snapshot */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Token Being Processed */}
-        <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800 flex items-center justify-between">
-          <span className="text-xs text-slate-400 font-medium">Scanned Token</span>
-          <span className="font-mono text-base font-bold px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+        <div className="bg-[#09090B] rounded p-3 border border-[#27272A] flex items-center justify-between">
+          <span className="text-[11px] font-mono text-[#71717A]">CURRENT_TOKEN</span>
+          <span className="font-mono text-base font-bold px-3 py-0.5 rounded bg-[#06B6D4]/15 text-[#06B6D4] border border-[#06B6D4]/40 shadow-[0_0_8px_rgba(6,182,212,0.2)]">
             {currentToken || '—'}
           </span>
         </div>
 
         {/* Action Taken */}
-        <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800 flex items-center justify-between">
-          <span className="text-xs text-slate-400 font-medium">Action Taken</span>
-          <span className={`text-xs font-bold font-mono px-3 py-1 rounded-lg border ${getActionBadgeColor()}`}>
+        <div className="bg-[#09090B] rounded p-3 border border-[#27272A] flex items-center justify-between">
+          <span className="text-[11px] font-mono text-[#71717A]">ACTION_TYPE</span>
+          <span className={`text-xs font-bold font-mono px-3 py-1 rounded border ${getActionBadgeColor()}`}>
             {action}
           </span>
         </div>
       </div>
 
       {/* Context-Aware "Why Did This Happen?" Box */}
-      <div className="bg-gradient-to-br from-indigo-950/40 to-slate-950/80 rounded-xl p-4 border border-indigo-900/40 flex flex-col gap-2.5">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-300">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Why Did This Happen?</span>
+      <div className="bg-[#18181B] rounded p-4 border border-[#6366F1]/30 shadow-[0_0_16px_rgba(99,102,241,0.08)] flex flex-col gap-2.5">
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-[#C0C1FF]">
+          <Sparkles className="w-3.5 h-3.5 text-[#06B6D4]" />
+          <span className="font-mono tracking-wider">WHY DID THIS HAPPEN?</span>
         </div>
 
-        <p className="text-sm text-slate-200 leading-relaxed font-sans">
+        <p className="text-sm text-[#F8FAFC] leading-relaxed font-sans">
           {explanation}
         </p>
 
         {/* Rule Applied Callout */}
         {ruleApplied && (
-          <div className="mt-1 pt-2 border-t border-indigo-900/30 flex items-start gap-2 text-xs text-indigo-300/90 font-mono">
-            <span className="font-bold text-amber-400 shrink-0">Rule:</span>
+          <div className="mt-1 pt-2 border-t border-[#27272A] flex items-start gap-2 text-xs text-[#A5B4FC] font-mono">
+            <span className="font-bold text-[#F59E0B] shrink-0">RULE:</span>
             <span>{ruleApplied}</span>
           </div>
         )}
 
         {/* Comparison Details if available */}
         {comparisons && (
-          <div className="mt-1 p-2 rounded-lg bg-black/30 border border-indigo-950 font-mono text-xs text-slate-300 flex items-center gap-2">
-            <span className="text-slate-400">Precedence Check:</span>
-            <span className="text-amber-300 font-semibold">{comparisons}</span>
+          <div className="mt-1 p-2 rounded bg-[#09090B] border border-[#27272A] font-mono text-xs text-[#F8FAFC] flex items-center gap-2">
+            <span className="text-[#71717A]">PRECEDENCE_CHECK:</span>
+            <span className="text-[#F59E0B] font-semibold">{comparisons}</span>
           </div>
         )}
       </div>
 
       {/* Output Buffer Stream */}
-      <div className="bg-slate-950/70 rounded-xl p-3.5 border border-slate-800 flex flex-col gap-1.5">
+      <div className="bg-[#09090B] rounded p-3.5 border border-[#27272A] flex flex-col gap-1.5">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-slate-400 flex items-center gap-1 font-medium">
-            <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-            Intermediate Postfix Stream
+          <span className="text-[#71717A] flex items-center gap-1 font-mono text-[11px]">
+            <Terminal className="w-3.5 h-3.5 text-[#06B6D4]" />
+            INTERMEDIATE_OUTPUT_STREAM
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">
-            Length: {outputBuffer.length}
+          <span className="text-[10px] text-[#71717A] font-mono">
+            LENGTH: {outputBuffer.length}
           </span>
         </div>
 
-        <div className="bg-slate-900/90 rounded-lg p-2.5 font-mono text-sm text-cyan-300 overflow-x-auto whitespace-nowrap border border-slate-800 tracking-wide font-bold">
-          {outputBuffer.length > 0 ? outputBuffer.join(' ') : <span className="text-slate-600 font-normal italic">Empty buffer</span>}
+        <div className="bg-[#18181B] rounded p-2.5 font-mono text-sm text-[#06B6D4] overflow-x-auto whitespace-nowrap border border-[#27272A] tracking-wide font-bold">
+          {outputBuffer.length > 0 ? outputBuffer.join(' ') : <span className="text-[#71717A] font-normal italic">Empty buffer</span>}
         </div>
       </div>
     </div>

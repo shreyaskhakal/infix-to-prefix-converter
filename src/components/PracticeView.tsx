@@ -113,41 +113,41 @@ export const PracticeView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-6 p-4">
+    <div className="max-w-4xl mx-auto flex flex-col gap-6 p-4 text-[#F8FAFC]">
       {/* Title & Stats */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded bg-[#10B981]/15 text-[#10B981] flex items-center justify-center border border-[#10B981]/30">
               <Compass className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-bold text-slate-100">Interactive Practice Arena</h2>
+            <h2 className="text-xl font-bold text-[#F8FAFC]">Interactive Practice Arena</h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Predict the prefix output for each expression and sharpen your manual stack tracing intuition.
+          <p className="text-xs text-[#71717A] mt-1 font-mono">
+            MANUAL STACK PREDICTION &bull; DYNAMIC CHALLENGE SUITE
           </p>
         </div>
 
         {/* Scorecard */}
-        <div className="flex items-center gap-3 bg-slate-900/80 border border-slate-800 p-2.5 rounded-xl text-xs font-mono">
+        <div className="flex items-center gap-3 bg-[#09090B] border border-[#27272A] p-2.5 rounded text-xs font-mono">
           <div>
-            <span className="text-slate-400">Solved: </span>
-            <strong className="text-emerald-400">{score.correct}/{score.attempted}</strong>
+            <span className="text-[#71717A]">SOLVED: </span>
+            <strong className="text-[#10B981]">{score.correct}/{score.attempted}</strong>
           </div>
-          <div className="w-px h-4 bg-slate-800" />
+          <div className="w-px h-4 bg-[#27272A]" />
           <div>
-            <span className="text-slate-400">Accuracy: </span>
-            <strong className="text-indigo-400">{accuracy}%</strong>
+            <span className="text-[#71717A]">ACCURACY: </span>
+            <strong className="text-[#C0C1FF]">{accuracy}%</strong>
           </div>
-          <div className="w-px h-4 bg-slate-800" />
-          <div className="flex items-center gap-1 text-amber-400 font-bold" title="Current streak">
-            <Flame className="w-3.5 h-3.5 fill-amber-400" />
+          <div className="w-px h-4 bg-[#27272A]" />
+          <div className="flex items-center gap-1 text-[#F59E0B] font-bold" title="Current streak">
+            <Flame className="w-3.5 h-3.5 fill-[#F59E0B]" />
             <span>{score.streak}</span>
           </div>
           <button
             onClick={resetStats}
             title="Reset Score"
-            className="p-1 rounded text-slate-500 hover:text-slate-300"
+            className="p-1 rounded text-[#71717A] hover:text-[#F8FAFC]"
             aria-label="Reset practice stats"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -157,7 +157,7 @@ export const PracticeView: React.FC = () => {
 
       {/* Difficulty Tabs & Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-[#09090B] p-1 rounded border border-[#27272A]">
           {['All', 'Easy', 'Medium', 'Hard', 'Expert'].map((diff) => (
             <button
               key={diff}
@@ -168,10 +168,10 @@ export const PracticeView: React.FC = () => {
                 setUserAnswer('');
                 setIsSubmitted(false);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`px-3 py-1 rounded text-xs font-mono font-medium transition-all ${
                 selectedDifficulty === diff
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-[#18181B] text-[#C0C1FF] border border-[#6366F1]/50 shadow-[0_0_8px_rgba(99,102,241,0.2)]'
+                  : 'text-[#71717A] hover:text-[#F8FAFC]'
               }`}
             >
               {diff}
@@ -181,38 +181,38 @@ export const PracticeView: React.FC = () => {
 
         <button
           onClick={handleGenerateRandom}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-950/70 border border-indigo-800 text-indigo-300 hover:bg-indigo-900/60 transition-all shadow-sm"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono font-semibold bg-[#18181B] border border-[#6366F1]/40 text-[#C0C1FF] hover:bg-[#201F22] transition-all shadow-sm"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Generate Random Expression</span>
+          <Sparkles className="w-3.5 h-3.5 text-[#06B6D4]" />
+          <span>GENERATE_DYNAMIC_EXPR</span>
         </button>
       </div>
 
       {/* Challenge Card */}
-      <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-6 flex flex-col gap-5 shadow-xl">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div className="bg-[#111318] rounded-lg border border-[#27272A] p-6 flex flex-col gap-5 shadow-xl">
+        <div className="flex items-center justify-between pb-3 border-b border-[#27272A]">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800">
+            <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-[#18181B] text-[#C0C1FF] border border-[#27272A]">
               {customChallenge ? 'Dynamic Generated' : `Challenge ${(challengeIndex % Math.max(1, availableChallenges.length)) + 1} of ${availableChallenges.length}`}
             </span>
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase border ${getDifficultyBadge()}`}>
+            <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded uppercase border ${getDifficultyBadge()}`}>
               {challenge.difficulty}
             </span>
           </div>
         </div>
 
         {/* Infix Expression Banner */}
-        <div className="flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-xl border border-slate-800 text-center">
-          <span className="text-xs text-slate-400 font-medium mb-1">Target Infix Expression</span>
-          <span className="font-mono text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-wider">
+        <div className="flex flex-col items-center justify-center p-6 bg-[#09090B] rounded border border-[#27272A] text-center">
+          <span className="text-[10px] text-[#71717A] font-mono uppercase font-semibold mb-1">TARGET_INFIX_EXPRESSION</span>
+          <span className="font-mono text-2xl sm:text-3xl font-extrabold text-[#F8FAFC] tracking-wider">
             {targetInfix}
           </span>
         </div>
 
         {/* User Input Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <label className="text-xs text-slate-300 font-medium">
-            Enter your predicted Prefix notation:
+          <label className="text-xs text-[#71717A] font-mono">
+            PREDICTED_PREFIX_NOTATION:
           </label>
           <div className="flex flex-col sm:flex-row gap-2">
             <input
@@ -220,25 +220,25 @@ export const PracticeView: React.FC = () => {
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
               disabled={isSubmitted}
-              placeholder="e.g. +A*BC"
-              className="flex-1 px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl font-mono text-base text-slate-100 focus:outline-none focus:border-indigo-500 disabled:opacity-60 transition-colors uppercase"
+              placeholder="e.g. +A*BC or + A * B C"
+              className="flex-1 px-4 py-3 bg-[#09090B] border border-[#27272A] rounded font-mono text-base text-[#F8FAFC] focus:outline-none focus:border-[#6366F1] disabled:opacity-60 transition-colors uppercase"
             />
 
             {!isSubmitted ? (
               <button
                 type="submit"
                 disabled={!userAnswer.trim()}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-40"
+                className="px-6 py-3 rounded bg-[#6366F1] hover:bg-[#4F46E5] text-white font-mono font-bold text-xs shadow-[0_0_12px_rgba(99,102,241,0.3)] transition-all disabled:opacity-40 border-t border-white/20"
               >
-                Submit Answer
+                SUBMIT ANSWER
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleNext}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2"
+                className="px-6 py-3 rounded bg-[#10B981] hover:bg-[#059669] text-white font-mono font-bold text-xs shadow-[0_0_12px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 border-t border-white/20"
               >
-                <span>Next Challenge</span>
+                <span>NEXT CHALLENGE</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -247,46 +247,46 @@ export const PracticeView: React.FC = () => {
 
         {/* Result & Explanation Feedback */}
         {isSubmitted && (
-          <div className={`p-5 rounded-xl border flex flex-col gap-3 animate-in fade-in duration-300 ${
+          <div className={`p-5 rounded border flex flex-col gap-3 animate-in fade-in duration-300 ${
             isCorrect 
-              ? 'bg-emerald-950/30 border-emerald-700 text-emerald-200' 
-              : 'bg-rose-950/30 border-rose-700 text-rose-200'
+              ? 'bg-[#10B981]/10 border-[#10B981]/40 text-[#6EE7B7]' 
+              : 'bg-[#EF4444]/10 border-[#EF4444]/40 text-[#FCA5A5]'
           }`}>
-            <div className="flex items-center gap-2 font-bold text-sm">
+            <div className="flex items-center gap-2 font-bold text-sm font-mono">
               {isCorrect ? (
                 <>
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  <span>Spot On! Perfect Prediction.</span>
+                  <CheckCircle2 className="w-5 h-5 text-[#10B981]" />
+                  <span>SPOT ON! PERFECT PREDICTION.</span>
                 </>
               ) : (
                 <>
-                  <XCircle className="w-5 h-5 text-rose-400" />
-                  <span>Incorrect. Let's inspect the stack reasoning:</span>
+                  <XCircle className="w-5 h-5 text-[#EF4444]" />
+                  <span>INCORRECT. INSPECT STACK REASONING:</span>
                 </>
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono bg-black/40 p-3 rounded-lg border border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono bg-[#09090B] p-3 rounded border border-[#27272A]">
               <div>
-                <span className="text-slate-400">Your Answer: </span>
-                <span className={isCorrect ? 'text-emerald-400 font-bold' : 'text-rose-400 line-through'}>{userAnswer}</span>
+                <span className="text-[#71717A]">YOUR_ANSWER: </span>
+                <span className={isCorrect ? 'text-[#10B981] font-bold' : 'text-[#EF4444] line-through'}>{userAnswer}</span>
               </div>
               <div>
-                <span className="text-slate-400">Expected Prefix: </span>
-                <span className="text-indigo-300 font-bold">{expectedPrefix}</span>
+                <span className="text-[#71717A]">EXPECTED_PREFIX: </span>
+                <span className="text-[#C0C1FF] font-bold">{expectedPrefix}</span>
               </div>
             </div>
 
             {challenge.hint && (
-              <div className="text-xs text-slate-300 flex items-start gap-2 pt-1">
-                <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span><strong>Key Rule:</strong> {challenge.hint}</span>
+              <div className="text-xs text-[#F8FAFC] flex items-start gap-2 pt-1 font-mono">
+                <Lightbulb className="w-4 h-4 text-[#F59E0B] shrink-0 mt-0.5" />
+                <span><strong className="text-[#F59E0B]">RULE:</strong> {challenge.hint}</span>
               </div>
             )}
 
             {challenge.explanation && (
-              <div className="text-xs text-slate-300 pt-1 border-t border-slate-800/80">
-                <strong className="text-indigo-400">Detailed Explanation: </strong>
+              <div className="text-xs text-[#F8FAFC] pt-1 border-t border-[#27272A] font-mono">
+                <strong className="text-[#06B6D4]">EXPLANATION: </strong>
                 <span>{challenge.explanation}</span>
               </div>
             )}

@@ -71,28 +71,28 @@ export const QuizView: React.FC = () => {
     const totalQ = Math.max(1, activeQuestions.length);
     const percentage = Math.round((score / totalQ) * 100);
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-slate-900/60 rounded-2xl border border-slate-800 text-center flex flex-col items-center gap-5 shadow-2xl">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+      <div className="max-w-2xl mx-auto p-6 bg-[#111318] rounded-lg border border-[#27272A] text-center flex flex-col items-center gap-5 shadow-2xl text-[#F8FAFC]">
+        <div className="w-16 h-16 rounded bg-[#6366F1]/15 text-[#C0C1FF] flex items-center justify-center border border-[#6366F1]/30">
           <Award className="w-8 h-8" />
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold text-slate-100">Quiz Completed!</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Data Structures & Expression Evaluation Proficiency
+          <h2 className="text-2xl font-bold text-[#F8FAFC]">Quiz Completed!</h2>
+          <p className="text-xs text-[#71717A] mt-1 font-mono">
+            DSA STACK & EXPRESSION PARSING ASSESSMENT
           </p>
         </div>
 
-        <div className="bg-slate-950/80 px-8 py-6 rounded-2xl border border-slate-800 flex flex-col items-center gap-1">
-          <div className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+        <div className="bg-[#09090B] px-8 py-6 rounded border border-[#27272A] flex flex-col items-center gap-1 font-mono">
+          <div className="text-4xl font-extrabold text-[#06B6D4]">
             {score} / {totalQ}
           </div>
-          <div className="text-xs text-slate-400 font-medium">Final Score ({percentage}%)</div>
+          <div className="text-xs text-[#71717A]">FINAL SCORE: {percentage}%</div>
         </div>
 
-        <p className="text-xs text-slate-300 max-w-md">
+        <p className="text-xs text-[#71717A] max-w-md font-mono">
           {percentage >= 80
-            ? 'Outstanding! You have mastered the stack mechanics, precedence tables, unary operations, and token reversal algorithms.'
+            ? 'Outstanding! You have mastered stack mechanics, precedence tables, unary operations, and token reversal algorithms.'
             : percentage >= 50
             ? 'Good work! Review the pseudocode and theory tab to solidify edge cases like right-associative exponentiation and unary operators.'
             : 'Keep practicing! Review the step-by-step visualizer and theory section.'}
@@ -100,10 +100,10 @@ export const QuizView: React.FC = () => {
 
         <button
           onClick={handleReset}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 rounded bg-[#6366F1] hover:bg-[#4F46E5] text-white font-mono font-bold text-xs shadow-[0_0_12px_rgba(99,102,241,0.3)] transition-colors border-t border-white/20"
         >
           <RotateCcw className="w-4 h-4" />
-          Retake Quiz
+          <span>RETAKE QUIZ</span>
         </button>
       </div>
     );
@@ -112,27 +112,27 @@ export const QuizView: React.FC = () => {
   const progressPercent = Math.round(((currentQuestionIndex + 1) / Math.max(1, activeQuestions.length)) * 100);
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col gap-5 p-4">
+    <div className="max-w-3xl mx-auto flex flex-col gap-5 p-4 text-[#F8FAFC]">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#27272A]">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded bg-[#6366F1]/15 text-[#C0C1FF] flex items-center justify-center border border-[#6366F1]/30">
             <GraduationCap className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-100">DSA Concept Quiz</h2>
-            <p className="text-xs text-slate-400">Mastery questions on stacks, precedence, LIFO, and notations</p>
+            <h2 className="text-xl font-bold text-[#F8FAFC]">DSA Concept Quiz</h2>
+            <p className="text-xs text-[#71717A] font-mono">CURATED 52-QUESTION BANK ON LIFO AUTOMATA & NOTATIONS</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-300">
-            Question {currentQuestionIndex + 1} of {activeQuestions.length}
+          <span className="text-xs font-mono px-3 py-1 rounded bg-[#18181B] text-[#71717A] border border-[#27272A]">
+            QUESTION <strong className="text-[#06B6D4]">{currentQuestionIndex + 1}</strong> / {activeQuestions.length}
           </span>
           <button
             onClick={handleReset}
             title="Shuffle & Restart"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded text-[#71717A] hover:text-[#F8FAFC] hover:bg-[#18181B] border border-transparent hover:border-[#27272A] transition-colors"
             aria-label="Restart quiz"
           >
             <Shuffle className="w-4 h-4" />
@@ -141,9 +141,9 @@ export const QuizView: React.FC = () => {
       </div>
 
       {/* Mode & Category Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#111318] p-2.5 rounded border border-[#27272A] text-xs">
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
-          <span className="text-slate-500 font-medium shrink-0">Category:</span>
+          <span className="text-[#71717A] font-mono text-[11px] shrink-0">CATEGORY:</span>
           {categories.slice(0, 5).map((cat) => (
             <button
               key={cat}
@@ -154,10 +154,10 @@ export const QuizView: React.FC = () => {
                 setIsAnswered(false);
                 setScore(0);
               }}
-              className={`px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
+              className={`px-2.5 py-1 rounded text-xs font-mono transition-all whitespace-nowrap ${
                 selectedCategory === cat
-                  ? 'bg-indigo-600 text-white font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  ? 'bg-[#18181B] text-[#C0C1FF] border border-[#6366F1]/50 shadow-[0_0_8px_rgba(99,102,241,0.2)]'
+                  : 'text-[#71717A] hover:text-[#F8FAFC]'
               }`}
             >
               {cat}
@@ -166,7 +166,7 @@ export const QuizView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1 shrink-0 font-mono">
-          <span className="text-slate-500 font-medium">Questions:</span>
+          <span className="text-[#71717A] text-[11px]">POOL:</span>
           {[10, 25, 52].map((cnt) => (
             <button
               key={cnt}
@@ -179,8 +179,8 @@ export const QuizView: React.FC = () => {
               }}
               className={`px-2 py-0.5 rounded text-[11px] ${
                 quizLength === cnt
-                  ? 'bg-indigo-600 text-white font-bold'
-                  : 'text-slate-400 hover:bg-slate-800'
+                  ? 'bg-[#6366F1] text-white font-bold'
+                  : 'text-[#71717A] hover:bg-[#18181B]'
               }`}
             >
               {cnt}
@@ -190,25 +190,25 @@ export const QuizView: React.FC = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
+      <div className="w-full bg-[#18181B] rounded h-1.5 overflow-hidden border border-[#27272A]">
         <div
-          className="bg-gradient-to-r from-indigo-500 to-cyan-400 h-1.5 rounded-full transition-all duration-300"
+          className="bg-[#06B6D4] h-1.5 transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
       {/* Question Card */}
-      <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-6 flex flex-col gap-5 shadow-xl">
-        <div className="flex items-center justify-between text-xs text-slate-400">
-          <span className="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700/60 font-mono">
+      <div className="bg-[#111318] rounded-lg border border-[#27272A] p-6 flex flex-col gap-5 shadow-xl">
+        <div className="flex items-center justify-between text-xs text-[#71717A]">
+          <span className="px-2 py-0.5 rounded bg-[#09090B] border border-[#27272A] font-mono text-[#C0C1FF]">
             {question.category}
           </span>
           {question.difficulty && (
-            <span className="font-semibold text-indigo-400">{question.difficulty}</span>
+            <span className="font-mono text-[#06B6D4] font-semibold">{question.difficulty}</span>
           )}
         </div>
 
-        <div className="text-base font-semibold text-slate-100 leading-snug">
+        <div className="text-base font-semibold text-[#F8FAFC] leading-snug">
           {question.question}
         </div>
 
@@ -218,15 +218,15 @@ export const QuizView: React.FC = () => {
             const isChosen = selectedOption === idx;
             const isCorrect = idx === question.correctIndex;
 
-            let btnStyle = 'bg-slate-950/70 border-slate-800 text-slate-300 hover:bg-slate-800/80 hover:border-slate-700';
+            let btnStyle = 'bg-[#09090B] border-[#27272A] text-[#F8FAFC] hover:bg-[#18181B] hover:border-[#3F3F46]';
 
             if (isAnswered) {
               if (isCorrect) {
-                btnStyle = 'bg-emerald-950/50 border-emerald-600 text-emerald-200';
+                btnStyle = 'bg-[#10B981]/15 border-[#10B981] text-[#6EE7B7] shadow-[0_0_10px_rgba(16,185,129,0.25)]';
               } else if (isChosen) {
-                btnStyle = 'bg-rose-950/50 border-rose-600 text-rose-200';
+                btnStyle = 'bg-[#EF4444]/15 border-[#EF4444] text-[#FCA5A5]';
               } else {
-                btnStyle = 'bg-slate-950/40 border-slate-900 text-slate-500 opacity-60';
+                btnStyle = 'bg-[#09090B]/60 border-[#27272A] text-[#71717A] opacity-50';
               }
             }
 
@@ -235,10 +235,10 @@ export const QuizView: React.FC = () => {
                 key={idx}
                 onClick={() => handleSelectOption(idx)}
                 disabled={isAnswered}
-                className={`w-full p-4 rounded-xl border text-left text-xs sm:text-sm font-medium flex items-center justify-between transition-all ${btnStyle}`}
+                className={`w-full p-4 rounded border text-left text-xs sm:text-sm font-mono flex items-center justify-between transition-all ${btnStyle}`}
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-lg bg-black/40 flex items-center justify-center text-xs font-mono font-bold text-slate-400">
+                  <span className="w-6 h-6 rounded bg-[#18181B] border border-[#27272A] flex items-center justify-center text-xs font-mono font-bold text-[#71717A]">
                     {String.fromCharCode(65 + idx)}
                   </span>
                   <span>{opt}</span>
@@ -246,8 +246,8 @@ export const QuizView: React.FC = () => {
 
                 {isAnswered && (
                   <div>
-                    {isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-                    {isChosen && !isCorrect && <XCircle className="w-5 h-5 text-rose-400" />}
+                    {isCorrect && <CheckCircle2 className="w-5 h-5 text-[#10B981]" />}
+                    {isChosen && !isCorrect && <XCircle className="w-5 h-5 text-[#EF4444]" />}
                   </div>
                 )}
               </button>
@@ -257,18 +257,18 @@ export const QuizView: React.FC = () => {
 
         {/* Explanation & Next */}
         {isAnswered && (
-          <div className="mt-2 p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col gap-3 animate-in fade-in">
-            <div className="text-xs text-slate-300 leading-relaxed">
-              <strong className="text-indigo-400">Explanation: </strong>
+          <div className="mt-2 p-4 rounded bg-[#09090B] border border-[#27272A] flex flex-col gap-3 animate-in fade-in">
+            <div className="text-xs text-[#F8FAFC] leading-relaxed font-mono">
+              <strong className="text-[#06B6D4]">EXPLANATION: </strong>
               {question.explanation}
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-800/80">
+            <div className="flex justify-end pt-2 border-t border-[#27272A]">
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs shadow-md shadow-indigo-600/30 transition-all"
+                className="flex items-center gap-2 px-5 py-2 rounded bg-[#6366F1] hover:bg-[#4F46E5] text-white font-mono font-bold text-xs shadow-[0_0_12px_rgba(99,102,241,0.3)] transition-all border-t border-white/20"
               >
-                <span>{currentQuestionIndex + 1 === activeQuestions.length ? 'View Results' : 'Next Question'}</span>
+                <span>{currentQuestionIndex + 1 === activeQuestions.length ? 'VIEW RESULTS' : 'NEXT QUESTION'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

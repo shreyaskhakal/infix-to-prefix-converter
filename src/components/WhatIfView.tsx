@@ -27,23 +27,23 @@ export const WhatIfView: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-6 p-4">
+    <div className="max-w-6xl mx-auto flex flex-col gap-6 p-4 text-[#F8FAFC]">
       {/* Title */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded bg-[#6366F1]/15 text-[#C0C1FF] flex items-center justify-center border border-[#6366F1]/30">
             <GitCompare className="w-5 h-5" />
           </div>
-          <h2 className="text-xl font-bold text-slate-100">What-If Comparison Lab</h2>
+          <h2 className="text-xl font-bold text-[#F8FAFC]">What-If Comparison Lab</h2>
         </div>
-        <p className="text-xs text-slate-400">
-          Compare two expressions side-by-side to understand how operator precedence and parentheses structurally alter stack evaluation.
+        <p className="text-xs text-[#71717A] font-mono">
+          PARALLEL AST EXPERIMENTATION &bull; PRECEDENCE & PARENTHESIS BINDING DYNAMICS
         </p>
       </div>
 
       {/* Preset Buttons */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-slate-400 font-medium">Quick Presets:</span>
+        <span className="text-[10px] font-mono text-[#71717A] uppercase font-semibold">PRESETS:</span>
         {presets.map((p) => (
           <button
             key={p.label}
@@ -51,7 +51,7 @@ export const WhatIfView: React.FC = () => {
               setExprA(p.a);
               setExprB(p.b);
             }}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700/60"
+            className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-[#18181B] hover:bg-[#201F22] text-[#F8FAFC] transition-colors border border-[#27272A] hover:border-[#3F3F46]"
           >
             {p.label}
           </button>
@@ -61,44 +61,44 @@ export const WhatIfView: React.FC = () => {
       {/* Input Columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Expression A */}
-        <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-5 flex flex-col gap-4 shadow-xl">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Expression A</span>
-            <span className="text-[11px] text-slate-400 font-mono">Standard / Baseline</span>
+        <div className="bg-[#111318] rounded-lg border border-[#27272A] p-5 flex flex-col gap-4 shadow-xl">
+          <div className="flex items-center justify-between pb-2 border-b border-[#27272A]">
+            <span className="text-xs font-mono font-bold text-[#C0C1FF] uppercase tracking-wider">EXPRESSION_A</span>
+            <span className="text-[10px] text-[#71717A] font-mono">BASELINE_PARSING</span>
           </div>
 
           <input
             type="text"
             value={exprA}
             onChange={(e) => setExprA(e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl font-mono text-base text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-[#09090B] border border-[#27272A] rounded font-mono text-base text-[#F8FAFC] focus:outline-none focus:border-[#6366F1] transition-colors"
             placeholder="e.g. A + B * C"
           />
 
           {aData.err ? (
-            <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#FCA5A5] text-xs font-mono flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{aData.err}</span>
             </div>
           ) : aData.res ? (
             <div className="flex flex-col gap-3">
-              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800">
-                <div className="text-[10px] text-slate-400 uppercase font-semibold">Prefix Output</div>
-                <div className="font-mono text-lg font-bold text-indigo-300 mt-0.5">{aData.res.prefix}</div>
+              <div className="bg-[#09090B] p-3.5 rounded border border-[#27272A]">
+                <div className="text-[10px] text-[#71717A] font-mono uppercase font-semibold">PREFIX_RESULT</div>
+                <div className="font-mono text-lg font-bold text-[#C0C1FF] mt-0.5">{aData.res.prefix}</div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                  <div className="text-[10px] text-slate-400">Steps</div>
-                  <div className="font-mono font-bold text-slate-200">{aData.res.stats.totalSteps}</div>
+              <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                <div className="bg-[#09090B] p-2 rounded border border-[#27272A]">
+                  <div className="text-[10px] text-[#71717A]">STEPS</div>
+                  <div className="font-mono font-bold text-[#F8FAFC]">{aData.res.stats.totalSteps}</div>
                 </div>
-                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                  <div className="text-[10px] text-slate-400">Peak Stack</div>
-                  <div className="font-mono font-bold text-indigo-400">{aData.res.stats.maxStackSize}</div>
+                <div className="bg-[#09090B] p-2 rounded border border-[#27272A]">
+                  <div className="text-[10px] text-[#71717A]">PEAK_DEPTH</div>
+                  <div className="font-mono font-bold text-[#C0C1FF]">{aData.res.stats.maxStackSize}</div>
                 </div>
-                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                  <div className="text-[10px] text-slate-400">Pushes/Pops</div>
-                  <div className="font-mono font-bold text-emerald-400">{aData.res.stats.pushes}/{aData.res.stats.pops}</div>
+                <div className="bg-[#09090B] p-2 rounded border border-[#27272A]">
+                  <div className="text-[10px] text-[#71717A]">PUSH/POP</div>
+                  <div className="font-mono font-bold text-[#10B981]">{aData.res.stats.pushes}/{aData.res.stats.pops}</div>
                 </div>
               </div>
             </div>
@@ -106,44 +106,44 @@ export const WhatIfView: React.FC = () => {
         </div>
 
         {/* Expression B */}
-        <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-5 flex flex-col gap-4 shadow-xl">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-            <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Expression B</span>
-            <span className="text-[11px] text-slate-400 font-mono">Variant / Parenthesized</span>
+        <div className="bg-[#111318] rounded-lg border border-[#27272A] p-5 flex flex-col gap-4 shadow-xl">
+          <div className="flex items-center justify-between pb-2 border-b border-[#27272A]">
+            <span className="text-xs font-mono font-bold text-[#06B6D4] uppercase tracking-wider">EXPRESSION_B</span>
+            <span className="text-[10px] text-[#71717A] font-mono">PARENTESIZED_VARIANT</span>
           </div>
 
           <input
             type="text"
             value={exprB}
             onChange={(e) => setExprB(e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl font-mono text-base text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-[#09090B] border border-[#27272A] rounded font-mono text-base text-[#F8FAFC] focus:outline-none focus:border-[#06B6D4] transition-colors"
             placeholder="e.g. (A + B) * C"
           />
 
           {bData.err ? (
-            <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#FCA5A5] text-xs font-mono flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{bData.err}</span>
             </div>
           ) : bData.res ? (
             <div className="flex flex-col gap-3">
-              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800">
-                <div className="text-[10px] text-slate-400 uppercase font-semibold">Prefix Output</div>
-                <div className="font-mono text-lg font-bold text-cyan-300 mt-0.5">{bData.res.prefix}</div>
+              <div className="bg-[#09090B] p-3.5 rounded border border-[#27272A]">
+                <div className="text-[10px] text-[#71717A] font-mono uppercase font-semibold">PREFIX_RESULT</div>
+                <div className="font-mono text-lg font-bold text-[#06B6D4] mt-0.5">{bData.res.prefix}</div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                  <div className="text-[10px] text-slate-400">Steps</div>
-                  <div className="font-mono font-bold text-slate-200">{bData.res.stats.totalSteps}</div>
+              <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                <div className="bg-[#09090B] p-2 rounded border border-[#27272A]">
+                  <div className="text-[10px] text-[#71717A]">STEPS</div>
+                  <div className="font-mono font-bold text-[#F8FAFC]">{bData.res.stats.totalSteps}</div>
                 </div>
-                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                  <div className="text-[10px] text-slate-400">Peak Stack</div>
-                  <div className="font-mono font-bold text-cyan-400">{bData.res.stats.maxStackSize}</div>
+                <div className="bg-[#09090B] p-2 rounded border border-[#27272A]">
+                  <div className="text-[10px] text-[#71717A]">PEAK_DEPTH</div>
+                  <div className="font-mono font-bold text-[#06B6D4]">{bData.res.stats.maxStackSize}</div>
                 </div>
-                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
-                  <div className="text-[10px] text-slate-400">Pushes/Pops</div>
-                  <div className="font-mono font-bold text-emerald-400">{bData.res.stats.pushes}/{bData.res.stats.pops}</div>
+                <div className="bg-[#09090B] p-2 rounded border border-[#27272A]">
+                  <div className="text-[10px] text-[#71717A]">PUSH/POP</div>
+                  <div className="font-mono font-bold text-[#10B981]">{bData.res.stats.pushes}/{bData.res.stats.pops}</div>
                 </div>
               </div>
             </div>
@@ -153,22 +153,22 @@ export const WhatIfView: React.FC = () => {
 
       {/* Structural Comparison Insight */}
       {aData.res && bData.res && (
-        <div className="bg-gradient-to-r from-indigo-950/40 via-purple-950/40 to-slate-950/80 rounded-2xl border border-indigo-900/50 p-5 flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-indigo-300 font-semibold text-sm">
-            <Lightbulb className="w-4 h-4 text-amber-400" />
-            <span>Structural Discrepancy Insight</span>
+        <div className="bg-[#18181B] rounded-lg border border-[#6366F1]/30 p-5 flex flex-col gap-3 shadow-[0_0_16px_rgba(99,102,241,0.08)]">
+          <div className="flex items-center gap-2 text-[#C0C1FF] font-semibold text-sm">
+            <Lightbulb className="w-4 h-4 text-[#F59E0B]" />
+            <span className="font-mono tracking-wider">STRUCTURAL_DISCREPANCY_INSIGHT</span>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#F8FAFC] leading-relaxed">
             {aData.res.prefix === bData.res.prefix ? (
               <span>
-                Both expressions produced the identical prefix representation (<code className="text-indigo-400 font-mono">{aData.res.prefix}</code>). The parentheses did not change the natural operator precedence hierarchy.
+                Both expressions produced the identical prefix representation (<code className="text-[#C0C1FF] font-mono font-bold">{aData.res.prefix}</code>). The parentheses did not change the natural operator precedence hierarchy.
               </span>
             ) : (
               <span>
                 Parentheses or operator differences caused the prefix expression to change from{' '}
-                <code className="text-indigo-300 font-mono font-bold px-1.5 py-0.5 rounded bg-black/40">{aData.res.prefix}</code> to{' '}
-                <code className="text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded bg-black/40">{bData.res.prefix}</code>. In Expression B, the inner sub-expression was forced into the stack first, binding its operator prior to outside operations!
+                <code className="text-[#C0C1FF] font-mono font-bold px-1.5 py-0.5 rounded bg-[#09090B] border border-[#27272A]">{aData.res.prefix}</code> to{' '}
+                <code className="text-[#06B6D4] font-mono font-bold px-1.5 py-0.5 rounded bg-[#09090B] border border-[#27272A]">{bData.res.prefix}</code>. In Expression B, the inner sub-expression was forced into the stack first, binding its operator prior to outside operations!
               </span>
             )}
           </p>

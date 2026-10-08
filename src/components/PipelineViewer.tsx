@@ -57,20 +57,20 @@ export const PipelineViewer: React.FC<PipelineViewerProps> = ({
   ];
 
   return (
-    <div className="bg-slate-900/50 dark:bg-slate-900/80 rounded-2xl border border-slate-800 p-5 shadow-xl">
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+    <div className="bg-[#111318] rounded-lg border border-[#27272A] p-5 shadow-xl text-[#F8FAFC]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#27272A] mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+          <div className="w-7 h-7 rounded bg-[#06B6D4]/15 text-[#06B6D4] flex items-center justify-center border border-[#06B6D4]/30">
             <Workflow className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm text-slate-100">Conversion Pipeline</h3>
-            <p className="text-[11px] text-slate-400">Complete 6-Phase Transformation Architecture</p>
+            <h3 className="font-semibold text-sm text-[#F8FAFC]">Conversion Pipeline</h3>
+            <p className="text-[10px] text-[#71717A] font-mono">6-PHASE MATHEMATICAL STATE MACHINE</p>
           </div>
         </div>
 
-        <span className="text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800/80 px-2.5 py-1 rounded-full">
-          Phase {activeStage} of 6
+        <span className="text-xs font-mono text-[#06B6D4] bg-[#06B6D4]/10 border border-[#06B6D4]/30 px-2.5 py-1 rounded">
+          PHASE {activeStage} OF 6
         </span>
       </div>
 
@@ -81,39 +81,41 @@ export const PipelineViewer: React.FC<PipelineViewerProps> = ({
           return (
             <div
               key={stage.num}
-              className={`relative rounded-xl p-3.5 border transition-all ${
+              className={`relative rounded p-3.5 border transition-all ${
                 isCurrent
-                  ? 'bg-indigo-950/40 border-indigo-500/80 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/40'
+                  ? 'bg-[#18181B] border-[#06B6D4] shadow-[0_0_14px_rgba(6,182,212,0.2)] ring-1 ring-[#06B6D4]/30'
                   : isCompleted
-                  ? 'bg-slate-950/30 border-slate-800 opacity-85'
-                  : 'bg-slate-950/20 border-slate-800/60 opacity-60'
+                  ? 'bg-[#131315] border-[#27272A] opacity-90'
+                  : 'bg-[#09090B] border-[#27272A]/70 opacity-60'
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-[#F8FAFC] flex items-center gap-1.5">
                   {isCompleted ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" />
                   ) : (
-                    <span className={`w-2 h-2 rounded-full ${isCurrent ? 'bg-indigo-400 animate-pulse' : 'bg-slate-600'}`} />
+                    <span className={`w-2 h-2 rounded-full ${isCurrent ? 'bg-[#06B6D4] animate-pulse' : 'bg-[#3F3F46]'}`} />
                   )}
                   {stage.title}
                 </span>
 
                 <span
-                  className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                  className={`text-[9px] font-mono px-2 py-0.5 rounded ${
                     isCurrent
-                      ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-500/40'
-                      : 'bg-slate-800 text-slate-400'
+                      ? 'bg-[#06B6D4]/20 text-[#06B6D4] border border-[#06B6D4]/40'
+                      : isCompleted
+                      ? 'bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30'
+                      : 'bg-[#18181B] text-[#71717A] border border-[#27272A]'
                   }`}
                 >
                   {stage.badge}
                 </span>
               </div>
 
-              <p className="text-[11px] text-slate-400 mb-2">{stage.description}</p>
+              <p className="text-[11px] text-[#71717A] mb-2">{stage.description}</p>
 
-              <div className="bg-slate-950/90 rounded-lg p-2 font-mono text-xs text-slate-100 overflow-x-auto whitespace-nowrap border border-slate-800/80 flex items-center justify-between">
-                <span className="text-indigo-300 font-semibold">{stage.value || '—'}</span>
+              <div className="bg-[#09090B] rounded p-2 font-mono text-xs text-[#F8FAFC] overflow-x-auto whitespace-nowrap border border-[#27272A] flex items-center justify-between">
+                <span className="text-[#C0C1FF] font-semibold">{stage.value || '—'}</span>
               </div>
             </div>
           );

@@ -44,28 +44,28 @@ export const StepTable: React.FC<StepTableProps> = ({
   };
 
   return (
-    <div className="bg-slate-900/50 dark:bg-slate-900/80 rounded-2xl border border-slate-800 p-5 shadow-xl flex flex-col gap-4">
+    <div className="bg-[#111318] rounded-lg border border-[#27272A] p-5 shadow-xl flex flex-col gap-4 text-[#F8FAFC]">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#27272A]">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <div className="w-7 h-7 rounded bg-[#06B6D4]/15 text-[#06B6D4] flex items-center justify-center border border-[#06B6D4]/30">
             <Table className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm text-slate-100">Step-by-Step Trace Matrix</h3>
-            <p className="text-[11px] text-slate-400">Click any row to jump time-machine to that step</p>
+            <h3 className="font-semibold text-sm text-[#F8FAFC]">Execution Trace Matrix</h3>
+            <p className="text-[10px] text-[#71717A] font-mono">TABULAR STEP TRANSITIONS &bull; CLICK ROW TO SEEK</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-[#71717A] absolute left-2.5 top-2.5" />
             <input
               type="text"
-              placeholder="Filter steps..."
+              placeholder="Filter by token/action..."
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-xs bg-slate-950/70 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              className="pl-8 pr-3 py-1.5 text-xs font-mono bg-[#09090B] border border-[#27272A] rounded text-[#F8FAFC] placeholder-[#71717A] focus:outline-none focus:border-[#6366F1]"
             />
           </div>
 
@@ -73,7 +73,7 @@ export const StepTable: React.FC<StepTableProps> = ({
             onClick={exportCSV}
             disabled={steps.length === 0}
             title="Export CSV"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono font-medium bg-[#18181B] hover:bg-[#201F22] text-[#F8FAFC] border border-[#27272A] hover:border-[#3F3F46] transition-colors disabled:opacity-40"
           >
             <Download className="w-3.5 h-3.5" />
             CSV
@@ -82,23 +82,23 @@ export const StepTable: React.FC<StepTableProps> = ({
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto max-h-[380px] rounded-xl border border-slate-800/80">
+      <div className="overflow-x-auto max-h-[380px] rounded border border-[#27272A]">
         <table className="w-full text-left border-collapse text-xs">
-          <thead className="bg-slate-950 text-slate-400 font-mono uppercase text-[10px] tracking-wider sticky top-0 z-10 border-b border-slate-800">
+          <thead className="bg-[#09090B] text-[#71717A] font-mono uppercase text-[10px] tracking-wider sticky top-0 z-10 border-b border-[#27272A]">
             <tr>
-              <th className="py-2.5 px-3">#</th>
-              <th className="py-2.5 px-3">Token</th>
-              <th className="py-2.5 px-3">Action</th>
-              <th className="py-2.5 px-3">Stack</th>
-              <th className="py-2.5 px-3">Output Buffer</th>
-              <th className="py-2.5 px-4">Reasoning</th>
+              <th className="py-2.5 px-3">STEP</th>
+              <th className="py-2.5 px-3">TOKEN</th>
+              <th className="py-2.5 px-3">ACTION</th>
+              <th className="py-2.5 px-3">STACK_FRAME</th>
+              <th className="py-2.5 px-3">OUTPUT_STREAM</th>
+              <th className="py-2.5 px-4">REASONING</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 font-sans">
+          <tbody className="divide-y divide-[#27272A]/50 font-sans">
             {filteredSteps.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-500 italic">
-                  No trace records to display.
+                <td colSpan={6} className="py-8 text-center text-[#71717A] italic font-mono text-xs">
+                  NO_TRACE_RECORDS_FOUND
                 </td>
               </tr>
             ) : (
@@ -116,28 +116,28 @@ export const StepTable: React.FC<StepTableProps> = ({
                     onClick={() => onSelectStep(originalIndex)}
                     className={`cursor-pointer transition-colors ${
                       isActive
-                        ? 'bg-indigo-950/60 text-white font-medium ring-1 ring-inset ring-indigo-500/50'
-                        : 'hover:bg-slate-800/50 text-slate-300'
+                        ? 'bg-[#18181B] text-[#F8FAFC] font-medium border-l-2 border-l-[#06B6D4]'
+                        : 'hover:bg-[#131315] text-[#71717A] hover:text-[#F8FAFC]'
                     }`}
                   >
-                    <td className="py-2.5 px-3 font-mono font-bold text-indigo-400">
+                    <td className="py-2.5 px-3 font-mono font-bold text-[#06B6D4]">
                       {step.stepNumber}
                     </td>
                     <td className="py-2.5 px-3 font-mono font-semibold">
-                      <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700">
+                      <span className="px-1.5 py-0.5 rounded bg-[#09090B] border border-[#27272A] text-[#F8FAFC]">
                         {tok}
                       </span>
                     </td>
-                    <td className="py-2.5 px-3 font-medium">
+                    <td className="py-2.5 px-3 font-medium text-[#F8FAFC]">
                       {step.action}
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-amber-300">
+                    <td className="py-2.5 px-3 font-mono text-[#F59E0B]">
                       [{st.join(', ')}]
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-cyan-300">
+                    <td className="py-2.5 px-3 font-mono text-[#10B981]">
                       {out.join(' ')}
                     </td>
-                    <td className="py-2.5 px-4 text-slate-400 max-w-xs truncate" title={exp}>
+                    <td className="py-2.5 px-4 text-[#71717A] max-w-xs truncate font-mono text-[11px]" title={exp}>
                       {exp}
                     </td>
                   </tr>

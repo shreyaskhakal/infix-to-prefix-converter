@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { AlertCircle, Zap } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { AlertCircle, Zap, CheckCircle2 } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { StackVisualizer } from './components/StackVisualizer';
 import { PipelineViewer } from './components/PipelineViewer';
@@ -17,10 +17,19 @@ import { HistoryDrawer } from './components/HistoryDrawer';
 
 import { InfixToPrefixConverter } from './algorithms/converter';
 import { ExpressionValidator } from './algorithms/validator';
-import { EXAMPLE_EXPRESSIONS } from './data/constants';
+import { Tokenizer } from './algorithms/tokenizer';
 import type { ConversionResult, HistoryItem } from './types';
 
 const INITIAL_EXPRESSION = 'A + B * C';
+
+const STITCH_PRESETS = [
+  { label: 'Basic Math', expr: 'A + B * C' },
+  { label: 'Nested Parentheses', expr: '(A + B) * (C - D)' },
+  { label: 'Power / Exponent', expr: 'A ^ B ^ C' },
+  { label: 'Unary Operators', expr: '-A + B' },
+  { label: 'Implicit Multiplication', expr: '2(A + B)' },
+  { label: 'Complex Expression', expr: 'A + B * (C ^ D - E) - F' },
+];
 
 function createHistoryItem(res: ConversionResult): HistoryItem {
   const ts = Date.now();
@@ -193,11 +202,24 @@ export function App() {
     };
   }, [isPlaying, result, playbackSpeed]);
 
+  const liveValidation = useMemo(() => {
+    if (!inputExpression.trim()) return null;
+    return ExpressionValidator.validate(inputExpression);
+  }, [inputExpression]);
+
+  const liveTokenCount = useMemo(() => {
+    if (!inputExpression.trim()) return 0;
+    try {
+      return Tokenizer.tokenize(inputExpression).length;
+    } catch {
+      return 0;
+    }
+  }, [inputExpression]);
+
   const currentStep = result && result.steps[currentStepIndex] ? result.steps[currentStepIndex] : undefined;
 
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans transition-colors dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-[#09090B] text-[#F8FAFC] flex flex-col font-sans transition-colors">
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -212,34 +234,41 @@ export function App() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'converter' && (
           <div className="flex flex-col gap-6">
-            {/* Input & Examples Section */}
-            <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl flex flex-col gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            {/* Stitch Expression Workspace Section */}
+            <div className="bg-[#111318] rounded-lg border border-[#27272A] p-5 sm:p-6 shadow-xl flex flex-col gap-4 text-[#F8FAFC]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-[#27272A]">
                 <div>
-                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                    <span>Infix → Prefix Converter</span>
-                    <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                      Stack Lab
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC] flex items-center gap-2">
+                    <span>AlgoConvert Expression Visualizer</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded font-semibold bg-[#6366F1]/15 text-[#C0C1FF] border border-[#6366F1]/30">
+                      SHUNTING-YARD LAB
                     </span>
                   </h1>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Enter any mathematical expression with operators (+, -, *, /, %, ^), parentheses, and variables.
+                  <p className="text-[11px] text-[#71717A] mt-0.5 font-mono">
+                    Deterministic Infix → Prefix & Postfix transformation engine with real-time stack automata.
                   </p>
                 </div>
 
-                {/* Example Quick Pills */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-                  <span className="text-[11px] text-slate-500 font-medium whitespace-nowrap">Examples:</span>
-                  {EXAMPLE_EXPRESSIONS.slice(0, 5).map((ex) => (
-                    <button
-                      key={ex.expression}
-                      onClick={() => loadExample(ex.expression)}
-                      className="px-2.5 py-1 rounded-lg text-xs font-mono bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors whitespace-nowrap"
-                    >
-                      {ex.expression}
-                    </button>
-                  ))}
+                <div className="text-[10px] text-[#71717A] font-mono hidden sm:block">
+                  ALGORITHMIC_PRECISION_MATRIX
                 </div>
+              </div>
+
+              {/* Preset Chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                <span className="text-[10px] font-mono text-[#71717A] uppercase font-semibold whitespace-nowrap">
+                  PRESETS:
+                </span>
+                {STITCH_PRESETS.map((preset) => (
+                  <button
+                    key={preset.label}
+                    onClick={() => loadExample(preset.expr)}
+                    className="px-2.5 py-1 rounded text-xs font-mono bg-[#18181B] hover:bg-[#201F22] text-[#F8FAFC] border border-[#27272A] hover:border-[#3F3F46] transition-colors whitespace-nowrap flex items-center gap-1.5"
+                  >
+                    <span>{preset.label}</span>
+                    <span className="text-[10px] text-[#71717A]">({preset.expr})</span>
+                  </button>
+                ))}
               </div>
 
               {/* Expression Input Form */}
@@ -255,35 +284,54 @@ export function App() {
                     type="text"
                     value={inputExpression}
                     onChange={(e) => setInputExpression(e.target.value)}
-                    placeholder="Enter infix expression, e.g. (A + B) * C"
-                    className="w-full px-4 py-3.5 bg-slate-950 border border-slate-700/80 rounded-xl font-mono text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner"
+                    placeholder="Enter infix expression, e.g. (A + B) * C or A ^ B ^ C"
+                    className="w-full px-4 py-3 bg-[#09090B] border border-[#27272A] rounded font-mono text-base text-[#F8FAFC] placeholder-[#71717A] focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]/40 transition-all shadow-inner"
                   />
                   {inputExpression && (
                     <button
                       type="button"
                       onClick={handleClear}
-                      className="absolute right-3 top-3.5 text-xs text-slate-500 hover:text-slate-300 px-2 py-0.5 rounded bg-slate-800"
+                      className="absolute right-3 top-3 text-[11px] font-mono text-[#71717A] hover:text-[#F8FAFC] px-2 py-0.5 rounded bg-[#18181B] border border-[#27272A]"
                     >
-                      Clear
+                      CLEAR
                     </button>
                   )}
                 </div>
 
                 <button
                   type="submit"
-                  className="px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 flex items-center justify-center gap-2 transition-all"
+                  className="px-6 py-3 rounded bg-[#6366F1] hover:bg-[#4F46E5] text-white font-mono font-bold text-xs shadow-[0_0_12px_rgba(99,102,241,0.3)] flex items-center justify-center gap-2 transition-all border-t border-white/20 whitespace-nowrap"
                 >
-                  <Zap className="w-4 h-4 fill-white" />
-                  <span>Convert</span>
+                  <Zap className="w-3.5 h-3.5 fill-white" />
+                  <span>CONVERT & RUN</span>
                 </button>
               </form>
 
-              {/* Validation Error Alert */}
+              {/* Real-time Syntax & Token Banner */}
+              <div className="pt-1">
+                {liveValidation?.isValid ? (
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#10B981] bg-[#10B981]/10 border border-[#10B981]/25 px-3 py-1.5 rounded">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+                    <span>✓ Valid expression &bull; {liveTokenCount} tokens &bull; {inputExpression.length} characters</span>
+                  </div>
+                ) : liveValidation && !liveValidation.isValid ? (
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#EF4444] bg-[#EF4444]/10 border border-[#EF4444]/25 px-3 py-1.5 rounded">
+                    <AlertCircle className="w-3.5 h-3.5 text-[#EF4444] shrink-0" />
+                    <span>⚠ {liveValidation.error}</span>
+                  </div>
+                ) : (
+                  <div className="text-[11px] font-mono text-[#71717A] px-1">
+                    READY: Enter an infix expression or select a preset chip above
+                  </div>
+                )}
+              </div>
+
+              {/* Validation Error Alert on submit */}
               {validationError && (
-                <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/80 text-rose-200 text-xs sm:text-sm flex items-start gap-3 animate-in fade-in duration-200">
-                  <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#FCA5A5] text-xs font-mono flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-[#EF4444] shrink-0 mt-0.5" />
                   <div className="flex flex-col gap-0.5">
-                    <strong className="font-semibold text-rose-300">Invalid Expression Syntax</strong>
+                    <strong className="font-semibold text-[#EF4444]">SYNTAX_ERROR:</strong>
                     <span>{validationError}</span>
                   </div>
                 </div>
@@ -398,15 +446,15 @@ export function App() {
       />
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-800/80 bg-slate-950 py-6 text-center text-xs text-slate-500 mt-12">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="w-full border-t border-[#27272A] bg-[#09090B] py-6 text-center text-xs text-[#71717A] mt-12">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[11px]">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-400">Interactive Infix-to-Prefix DSA Lab</span>
+            <span className="font-semibold text-[#F8FAFC]">AlgoConvert &bull; DSA Expression Visualizer</span>
             <span>&bull;</span>
-            <span>Stack-Based Expression Evaluation</span>
+            <span>SHUNING-YARD LIFO AUTOMATON</span>
           </div>
           <div>
-            Built by <strong className="text-slate-300">Shreyas Khakal</strong> &bull; MIT License
+            Crafted by <strong className="text-[#C0C1FF]">Shreyas Khakal</strong> &bull; MIT License
           </div>
         </div>
       </footer>
