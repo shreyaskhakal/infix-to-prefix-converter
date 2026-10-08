@@ -1,4 +1,10 @@
 export class WhyEngine {
+  private static formatOp(op: string): string {
+    if (op === 'UNARY_MINUS' || op === '-(unary)' || op === 'u-') return '- (unary)';
+    if (op === 'UNARY_PLUS' || op === '+(unary)' || op === 'u+') return '+ (unary)';
+    return op;
+  }
+
   static explainOperand(token: string): string {
     return `'${token}' is an operand. In prefix/postfix notations, operands maintain their relative sequential order, so '${token}' is directly appended to the output buffer.`;
   }
@@ -8,7 +14,7 @@ export class WhyEngine {
   }
 
   static explainRightParenPop(topOp: string): string {
-    const displayOp = topOp === 'UNARY_MINUS' ? '-' : topOp;
+    const displayOp = this.formatOp(topOp);
     return `')' encountered. In the reversed expression, ')' marks the end of a parenthesized sub-expression. Operator '${displayOp}' is popped and added to output to resolve operations inside the parentheses.`;
   }
 
@@ -22,14 +28,14 @@ export class WhyEngine {
     inOp: string,
     inPrec: number
   ): string {
-    const displayTop = topOp === 'UNARY_MINUS' ? '- (unary)' : topOp;
-    const displayIn = inOp === 'UNARY_MINUS' ? '- (unary)' : inOp;
+    const displayTop = this.formatOp(topOp);
+    const displayIn = this.formatOp(inOp);
     return `Stack top '${displayTop}' (precedence ${topPrec}) has higher precedence than incoming '${displayIn}' (precedence ${inPrec}). Higher-precedence operations must evaluate before lower-precedence ones, so '${displayTop}' is popped to the output.`;
   }
 
   static explainEqualPrecedenceRightAssoc(topOp: string, inOp: string): string {
-    const displayTop = topOp === 'UNARY_MINUS' ? '- (unary)' : topOp;
-    const displayIn = inOp === 'UNARY_MINUS' ? '- (unary)' : inOp;
+    const displayTop = this.formatOp(topOp);
+    const displayIn = this.formatOp(inOp);
     return `Incoming '${displayIn}' and stack top '${displayTop}' both have equal precedence. Because right-associative operations evaluate right-to-left in the original expression, in the reversed stream the stack top operator '${displayTop}' must be popped first.`;
   }
 
@@ -38,9 +44,12 @@ export class WhyEngine {
   }
 
   static explainPush(op: string, wasEmpty: boolean, topOp?: string): string {
-    const displayOp = op === 'UNARY_MINUS' ? '- (unary)' : op;
-    if (op === 'UNARY_MINUS') {
+    const displayOp = this.formatOp(op);
+    if (op === 'UNARY_MINUS' || op === '-(unary)') {
       return `Unary negation '-' has higher precedence (5) and right-associativity. It is pushed onto the stack to bind tightly to its operand.`;
+    }
+    if (op === 'UNARY_PLUS' || op === '+(unary)') {
+      return `Unary positive '+' has higher precedence (5) and right-associativity. It is pushed onto the stack to bind tightly to its operand.`;
     }
     if (wasEmpty) {
       return `The stack is currently empty. Operator '${displayOp}' is pushed onto the stack to await its subsequent operand.`;
@@ -52,7 +61,7 @@ export class WhyEngine {
   }
 
   static explainFinalPop(op: string): string {
-    const displayOp = op === 'UNARY_MINUS' ? '- (unary)' : op;
+    const displayOp = this.formatOp(op);
     return `The end of the reversed expression has been reached. Remaining operator '${displayOp}' is popped from the stack and appended to the output buffer in LIFO order.`;
   }
 }

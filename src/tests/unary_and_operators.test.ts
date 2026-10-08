@@ -34,6 +34,68 @@ describe('Unary Operators and Operator Combinations', () => {
     expect(res.prefix).toBe('^A-B');
   });
 
+  it('converts unary plus at start: +A -> +A and +A+B -> ++AB', () => {
+    const res1 = InfixToPrefixConverter.convert('+A');
+    expect(res1.isValid).toBe(true);
+    expect(res1.prefix).toBe('+A');
+
+    const res2 = InfixToPrefixConverter.convert('+A+B');
+    expect(res2.isValid).toBe(true);
+    expect(res2.prefix).toBe('++AB');
+  });
+
+  it('converts parenthesized unary plus: +(A+B) -> ++AB and A*(+B) -> *A+B', () => {
+    const res1 = InfixToPrefixConverter.convert('+(A+B)');
+    expect(res1.isValid).toBe(true);
+    expect(res1.prefix).toBe('++AB');
+
+    const res2 = InfixToPrefixConverter.convert('A*(+B)');
+    expect(res2.isValid).toBe(true);
+    expect(res2.prefix).toBe('*A+B');
+  });
+
+  it('converts binary addition followed by unary minus: A+-B -> +A-B', () => {
+    const res = InfixToPrefixConverter.convert('A+-B');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('+A-B');
+  });
+
+  it('converts binary division followed by unary minus: A/-B -> /A-B', () => {
+    const res = InfixToPrefixConverter.convert('A/-B');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('/A-B');
+  });
+
+  it('converts complex negated group product: -(A+B)*C -> *-+ABC', () => {
+    const res = InfixToPrefixConverter.convert('-(A+B)*C');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('*-+ABC');
+  });
+
+  it('handles unary minus precedence with exponentiation: -A^B -> ^-AB', () => {
+    const res = InfixToPrefixConverter.convert('-A^B');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('^-AB');
+  });
+
+  it('handles explicit parenthesized base with exponentiation: (-A)^B -> ^-AB', () => {
+    const res = InfixToPrefixConverter.convert('(-A)^B');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('^-AB');
+  });
+
+  it('handles explicit parenthesized exponentiation negated: -(A^B) -> -^AB', () => {
+    const res = InfixToPrefixConverter.convert('-(A^B)');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('-^AB');
+  });
+
+  it('handles unary minus with exponentiation chain: -A^B^C -> ^-A^BC', () => {
+    const res = InfixToPrefixConverter.convert('-A^B^C');
+    expect(res.isValid).toBe(true);
+    expect(res.prefix).toBe('^-A^BC');
+  });
+
   it('converts binary subtraction: A-B -> -AB', () => {
     const res = InfixToPrefixConverter.convert('A-B');
     expect(res.isValid).toBe(true);
@@ -179,10 +241,14 @@ describe('Validation Hardening and Error Detection', () => {
     expect(val.error).toContain('cannot end with operator');
   });
 
-  it('rejects leading binary plus +A', () => {
-    const val = ExpressionValidator.validate('+A');
-    expect(val.isValid).toBe(false);
-    expect(val.error).toContain('cannot start with operator');
+  it('rejects leading binary operator *A and /A', () => {
+    const val1 = ExpressionValidator.validate('*A');
+    expect(val1.isValid).toBe(false);
+    expect(val1.error).toContain('cannot start with operator');
+
+    const val2 = ExpressionValidator.validate('/A');
+    expect(val2.isValid).toBe(false);
+    expect(val2.error).toContain('cannot start with operator');
   });
 
   it('rejects empty parentheses ()', () => {
@@ -260,5 +326,35 @@ describe('Validation Hardening and Error Detection', () => {
     const tokens = Tokenizer.tokenize('12.34.56 + 1');
     const val = ExpressionValidator.validate('12.34.56 + 1', tokens);
     expect(val.isValid).toBe(false);
+  });
+
+  it('validates all required unary forms as valid expressions', () => {
+    const validForms = ['-A', '+A', '-A+B', 'A+-B', 'A*-B', 'A/-B', 'A^(-B)', '-(A+B)', '+(A+B)'];
+    for (const expr of validForms) {
+      const res = ExpressionValidator.validate(expr);
+      expect(res.isValid, `Expected '${expr}' to be valid`).toBe(true);
+    }
+  });
+
+  it('rejects required invalid expression forms with descriptive error messages', () => {
+    const invalidCases: [string, RegExp][] = [
+      ['A**', /cannot appear immediately after|cannot end with operator/],
+      ['A+*', /cannot appear immediately after|cannot end with operator/],
+      ['A/', /cannot end with operator/],
+      ['A+', /cannot end with operator/],
+      ['()', /Empty parentheses/],
+      ['(A+B', /missing closing/],
+      ['A+B)', /Unbalanced closing parenthesis/],
+      ['A+)', /Unbalanced closing parenthesis|cannot be immediately followed by '\)'/],
+      ['(A+)', /cannot be immediately followed by '\)'/],
+      ['A @ B', /Invalid character/],
+      ['A # B', /Invalid character/],
+    ];
+
+    for (const [expr, errorPattern] of invalidCases) {
+      const res = ExpressionValidator.validate(expr);
+      expect(res.isValid, `Expected '${expr}' to be invalid`).toBe(false);
+      expect(res.error).toMatch(errorPattern);
+    }
   });
 });

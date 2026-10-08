@@ -85,9 +85,9 @@ export class Tokenizer {
     for (let j = 0; j < rawTokens.length; j++) {
       const current = rawTokens[j];
 
-      // Determine if '-' is unary
+      // Determine if '-' or '+' is unary
       let isUnary = false;
-      if (current.value === '-') {
+      if (current.value === '-' || current.value === '+') {
         if (j === 0) {
           isUnary = true;
         } else {

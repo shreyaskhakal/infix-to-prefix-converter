@@ -172,7 +172,11 @@ export class InfixToPrefixConverter {
       else if (tok.type === 'RIGHT_PAREN') {
         while (!stack.isEmpty() && stack.peek() !== '(') {
           const popped = stack.pop();
-          const outVal = (popped === 'UNARY_MINUS' || popped === '-(unary)' || popped === 'u-') ? '-' : popped;
+          const outVal = (popped === 'UNARY_MINUS' || popped === '-(unary)' || popped === 'u-')
+            ? '-'
+            : (popped === 'UNARY_PLUS' || popped === '+(unary)' || popped === 'u+')
+            ? '+'
+            : popped;
           postfixOutput.push(outVal);
           steps.push(
             makeStep(
@@ -212,7 +216,7 @@ export class InfixToPrefixConverter {
       // Case D: Operator (+, -, *, /, %, ^) or Unary Operator
       else if (tok.type === 'OPERATOR' || tok.type === 'UNARY_OPERATOR') {
         const isUnary = tok.isUnary || tok.type === 'UNARY_OPERATOR';
-        const stackOp = isUnary ? '-(unary)' : val;
+        const stackOp = isUnary ? (val === '+' ? '+(unary)' : '-(unary)') : val;
         const incomingPrec = tok.precedence;
         const incomingAssoc = tok.associativity;
 
@@ -243,7 +247,11 @@ export class InfixToPrefixConverter {
 
           if (shouldPop) {
             const popped = stack.pop();
-            const outVal = (popped === 'UNARY_MINUS' || popped === '-(unary)' || popped === 'u-') ? '-' : popped;
+            const outVal = (popped === 'UNARY_MINUS' || popped === '-(unary)' || popped === 'u-')
+              ? '-'
+              : (popped === 'UNARY_PLUS' || popped === '+(unary)' || popped === 'u+')
+              ? '+'
+              : popped;
             postfixOutput.push(outVal);
             steps.push(
               makeStep(
@@ -272,7 +280,7 @@ export class InfixToPrefixConverter {
             4,
             val,
             `PUSH '${val}' onto stack`,
-            WhyEngine.explainPush(isUnary ? 'UNARY_MINUS' : val, wasEmpty, topOpBeforePush),
+            WhyEngine.explainPush(isUnary ? (val === '+' ? 'UNARY_PLUS' : 'UNARY_MINUS') : val, wasEmpty, topOpBeforePush),
             'PUSH',
             stackOp,
             val,
@@ -288,7 +296,11 @@ export class InfixToPrefixConverter {
     // Empty remaining operators from stack
     while (!stack.isEmpty()) {
       const finalPopped = stack.pop();
-      const outVal = (finalPopped === 'UNARY_MINUS' || finalPopped === '-(unary)' || finalPopped === 'u-') ? '-' : finalPopped;
+      const outVal = (finalPopped === 'UNARY_MINUS' || finalPopped === '-(unary)' || finalPopped === 'u-')
+        ? '-'
+        : (finalPopped === 'UNARY_PLUS' || finalPopped === '+(unary)' || finalPopped === 'u+')
+        ? '+'
+        : finalPopped;
       postfixOutput.push(outVal);
       steps.push(
         makeStep(

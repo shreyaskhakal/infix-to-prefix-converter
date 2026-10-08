@@ -137,6 +137,54 @@ export const LearnView: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 space-y-2">
+          <strong className="text-slate-100 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+            Unary Operator Semantics & Exponentiation Rules:
+          </strong>
+          <ul className="list-disc list-inside space-y-1 text-slate-400 pl-1">
+            <li>
+              <strong className="text-slate-200">High Precedence (5):</strong> Unary <code className="text-indigo-300">+</code> and <code className="text-indigo-300">-</code> bind tighter than exponentiation (<code className="text-amber-300">^</code>, prec 4), multiplication/division/modulo (prec 3), and binary addition/subtraction (prec 2).
+            </li>
+            <li>
+              <strong className="text-slate-200">Right-Associative:</strong> Consecutive unary signs evaluate right-to-left.
+            </li>
+            <li>
+              <strong className="text-slate-200">Interaction with Exponentiation:</strong>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 font-mono text-[11px]">
+                <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400">Default: </span>
+                  <span className="text-amber-300">-A^B</span>
+                  <span className="text-slate-400"> &rarr; </span>
+                  <span className="text-emerald-400">^ - A B</span>
+                  <div className="text-[10px] text-slate-500 font-sans mt-0.5">(-A) is raised to power B due to precedence 5 &gt; 4</div>
+                </div>
+                <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400">Grouped: </span>
+                  <span className="text-amber-300">-(A^B)</span>
+                  <span className="text-slate-400"> &rarr; </span>
+                  <span className="text-emerald-400">- ^ A B</span>
+                  <div className="text-[10px] text-slate-500 font-sans mt-0.5">Parentheses explicitly defer the unary negation</div>
+                </div>
+                <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400">Exponent: </span>
+                  <span className="text-amber-300">A^-B</span>
+                  <span className="text-slate-400"> &rarr; </span>
+                  <span className="text-emerald-400">^ A - B</span>
+                  <div className="text-[10px] text-slate-500 font-sans mt-0.5">B is negated before being applied as power of A</div>
+                </div>
+                <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400">Chain: </span>
+                  <span className="text-amber-300">-A^B^C</span>
+                  <span className="text-slate-400"> &rarr; </span>
+                  <span className="text-emerald-400">^ - A ^ B C</span>
+                  <div className="text-[10px] text-slate-500 font-sans mt-0.5">Evaluates as (-A)^(B^C) combining precedence &amp; right-associativity</div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
 
       {/* Pseudocode Box */}

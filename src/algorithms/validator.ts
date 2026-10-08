@@ -104,9 +104,9 @@ export class Validator {
     // 4. Check Start and End tokens
     const first = tokenList[0];
     if (this.SUPPORTED_OPERATORS.has(first.value) || first.type === 'OPERATOR') {
-      // Unary minus is allowed at the start of expression (e.g. -A + B, -(A+B))
-      if (first.value === '-' && tokenList.length > 1) {
-        // Valid unary minus start
+      // Unary minus or plus is allowed at the start of expression (e.g. -A, +A, -A + B, +A + B, -(A+B), +(A+B))
+      if ((first.value === '-' || first.value === '+') && tokenList.length > 1) {
+        // Valid unary operator start
       } else {
         return {
           isValid: false,
@@ -135,7 +135,7 @@ export class Validator {
 
       // Consecutive operators
       if (currIsOp && nextIsOp) {
-        // Check if next is unary minus e.g. A * -B or A ^ -B
+        // Check if next is unary minus e.g. A * -B, A + -B, A / -B, A ^ -B
         if (next.isUnary && next.value === '-' && curr.value !== '-') {
           // Allowed: binary operator followed by unary minus
         } else {
@@ -145,7 +145,6 @@ export class Validator {
             position: next.position,
           };
         }
-
       }
 
       // Operator followed by closing parenthesis: e.g. (A+) or (A*+)
@@ -159,8 +158,8 @@ export class Validator {
 
       // Opening parenthesis followed by operator: e.g. (+A) or (-B)
       if (curr.value === '(' && nextIsOp) {
-        if (next.isUnary && next.value === '-') {
-          // Valid unary minus inside parenthesis e.g. (-B)
+        if (next.isUnary && (next.value === '-' || next.value === '+')) {
+          // Valid unary operator inside parenthesis e.g. (-B) or (+A)
         } else {
           return {
             isValid: false,

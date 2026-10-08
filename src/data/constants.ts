@@ -19,6 +19,7 @@ export const EXAMPLE_EXPRESSIONS = [
 ];
 
 export const OPERATOR_INFO = [
+  { symbol: '+(unary)', name: 'Unary Plus', precedence: 5, associativity: 'Right-to-Left', example: '+ A + B => + + A B' },
   { symbol: '-(unary)', name: 'Unary Minus', precedence: 5, associativity: 'Right-to-Left', example: '- A + B => + - A B' },
   { symbol: '^', name: 'Exponentiation', precedence: 4, associativity: 'Right-to-Left', example: 'A ^ B ^ C => A ^ (B ^ C)' },
   { symbol: '*', name: 'Multiplication', precedence: 3, associativity: 'Left-to-Right', example: 'A * B * C => (A * B) * C' },
