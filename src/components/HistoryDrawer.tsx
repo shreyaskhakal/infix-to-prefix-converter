@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, History, Trash2, ArrowUpRight, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, History, Trash2, ArrowUpRight, Clock, Search } from 'lucide-react';
 import type { HistoryItem } from '../types';
 
 interface HistoryDrawerProps {
@@ -19,7 +19,19 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
   onDelete,
   onClear,
 }) => {
+  const [filterQuery, setFilterQuery] = useState('');
+
   if (!isOpen) return null;
+
+  const filteredHistory = history.filter((item) => {
+    if (!filterQuery.trim()) return true;
+    const q = filterQuery.toLowerCase();
+    return (
+      (item.infix || '').toLowerCase().includes(q) ||
+      (item.prefix || '').toLowerCase().includes(q) ||
+      (item.postfix || '').toLowerCase().includes(q)
+    );
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -32,6 +44,9 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
           <div className="flex items-center gap-2">
             <History className="w-5 h-5 text-indigo-400" />
             <h3 className="font-bold text-slate-100 text-base">Conversion History</h3>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">
+              {history.length}
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -48,11 +63,28 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+              aria-label="Close history drawer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
+
+        {/* Filter Input */}
+        {history.length > 0 && (
+          <div className="px-4 pt-3 pb-1">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Search history expressions..."
+                value={filterQuery}
+                onChange={(e) => setFilterQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-950/80 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+          </div>
+        )}
 
         {/* History List */}
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
@@ -62,16 +94,27 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
               <p className="text-sm font-medium">No history recorded yet</p>
               <p className="text-xs text-slate-600 mt-1">Conversions you perform will automatically appear here.</p>
             </div>
+          ) : filteredHistory.length === 0 ? (
+            <div className="text-center p-6 text-slate-500 text-xs italic">
+              No matching records found for "{filterQuery}".
+            </div>
           ) : (
-            history.map((item) => (
+            filteredHistory.map((item) => (
               <div
                 key={item.id}
                 className="bg-slate-950/70 border border-slate-800 hover:border-slate-700 rounded-xl p-3.5 flex flex-col gap-2 transition-all group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-slate-500">
-                    {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-slate-500">
+                      {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
+                    {item.stepCount && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-900">
+                        {item.stepCount} steps
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => onSelect(item)}
@@ -106,3 +149,4 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
     </div>
   );
 };
+

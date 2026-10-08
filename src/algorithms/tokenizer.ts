@@ -4,6 +4,10 @@ export const OPERATOR_MAP: Record<
   string,
   { precedence: number; associativity: Associativity }
 > = {
+  'UNARY_MINUS': { precedence: 5, associativity: 'right' },
+  'UNARY_PLUS': { precedence: 5, associativity: 'right' },
+  'u-': { precedence: 5, associativity: 'right' },
+  'u+': { precedence: 5, associativity: 'right' },
   '^': { precedence: 4, associativity: 'right' },
   '*': { precedence: 3, associativity: 'left' },
   '/': { precedence: 3, associativity: 'left' },
@@ -18,7 +22,7 @@ export class Tokenizer {
   /**
    * Tokenizes an arithmetic expression into a structured sequence of Token objects.
    * Accurately supports identifiers (multi-char), numbers (multi-digit & decimal),
-   * operators (+, -, *, /, %, ^), and handles implicit multiplication.
+   * operators (+, -, *, /, %, ^), unary minus/plus, and handles implicit multiplication.
    */
   static tokenize(expression: string): Token[] {
     const rawTokens: { value: string; position: number }[] = [];
@@ -81,12 +85,25 @@ export class Tokenizer {
     for (let j = 0; j < rawTokens.length; j++) {
       const current = rawTokens[j];
 
-      if (j > 0) {
+      // Determine if '-' is unary
+      let isUnary = false;
+      if (current.value === '-') {
+        if (j === 0) {
+          isUnary = true;
+        } else {
+          const prev = rawTokens[j - 1];
+          if (['+', '-', '*', '/', '%', '^', '('].includes(prev.value)) {
+            isUnary = true;
+          }
+        }
+      }
+
+      if (j > 0 && !isUnary) {
         const prev = rawTokens[j - 1];
         const prevIsOperand = !['+', '-', '*', '/', '%', '^', '(', ')'].includes(prev.value);
         const currIsOperand = !['+', '-', '*', '/', '%', '^', '(', ')'].includes(current.value);
 
-        // Case 1: operand followed immediately by '(' -> A(B) => A * (B)
+        // Case 1: operand followed immediately by '(' -> A(B) => A * (B), 2(A) => 2 * (A)
         // Case 2: ')' followed immediately by operand -> (A)B => (A) * B
         // Case 3: ')' followed immediately by '(' -> (A)(B) => (A) * (B)
         if (
@@ -100,22 +117,35 @@ export class Tokenizer {
             precedence: 3,
             associativity: 'left',
             position: current.position,
+            isUnary: false,
           });
         }
       }
 
-      finalTokens.push(Tokenizer.createToken(current.value, current.position));
+      finalTokens.push(Tokenizer.createToken(current.value, current.position, isUnary));
     }
 
     return finalTokens;
   }
 
-  private static createToken(value: string, position: number): Token {
+  private static createToken(value: string, position: number, isUnary: boolean = false): Token {
     if (value === '(') {
-      return { value, type: 'LEFT_PAREN', precedence: 0, associativity: 'none', position };
+      return { value, type: 'LEFT_PAREN', precedence: 0, associativity: 'none', position, isUnary: false };
     }
     if (value === ')') {
-      return { value, type: 'RIGHT_PAREN', precedence: 0, associativity: 'none', position };
+      return { value, type: 'RIGHT_PAREN', precedence: 0, associativity: 'none', position, isUnary: false };
+    }
+    if (isUnary) {
+      const opKey = value === '-' ? 'UNARY_MINUS' : 'UNARY_PLUS';
+      const info = OPERATOR_MAP[opKey] || { precedence: 5, associativity: 'right' };
+      return {
+        value,
+        type: 'UNARY_OPERATOR',
+        precedence: info.precedence,
+        associativity: info.associativity,
+        position,
+        isUnary: true,
+      };
     }
     if (value in OPERATOR_MAP) {
       const info = OPERATOR_MAP[value];
@@ -125,6 +155,7 @@ export class Tokenizer {
         precedence: info.precedence,
         associativity: info.associativity,
         position,
+        isUnary: false,
       };
     }
     return {
@@ -133,14 +164,21 @@ export class Tokenizer {
       precedence: 0,
       associativity: 'none',
       position,
+      isUnary: false,
     };
   }
 
   static getPrecedence(op: string): number {
+    if (op === 'UNARY_MINUS' || op === 'u-' || op === '-(unary)') return 5;
+    if (op === 'UNARY_PLUS' || op === 'u+' || op === '+(unary)') return 5;
     return OPERATOR_MAP[op]?.precedence ?? 0;
   }
 
   static getAssociativity(op: string): Associativity {
+    if (op === 'UNARY_MINUS' || op === 'u-' || op === '-(unary)') return 'right';
+    if (op === 'UNARY_PLUS' || op === 'u+' || op === '+(unary)') return 'right';
     return OPERATOR_MAP[op]?.associativity ?? 'none';
   }
 }
+
+

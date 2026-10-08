@@ -1,6 +1,7 @@
 export type TokenType =
   | 'OPERAND'
   | 'OPERATOR'
+  | 'UNARY_OPERATOR'
   | 'LEFT_PAREN'
   | 'RIGHT_PAREN';
 
@@ -12,6 +13,7 @@ export interface Token {
   precedence: number;
   associativity: Associativity;
   position: number;
+  isUnary?: boolean;
 }
 
 export type OperationType =
@@ -90,6 +92,7 @@ export interface HistoryItem {
   prefix: string;
   postfix: string;
   timestamp: number;
+  stepCount?: number;
 }
 
 export interface QuizQuestion {
@@ -99,13 +102,19 @@ export interface QuizQuestion {
   correctIndex: number;
   explanation: string;
   category: string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard' | 'Expert';
 }
+
+
+export type PracticeDifficulty = 'Easy' | 'Medium' | 'Hard' | 'Expert' | 'Beginner' | 'Intermediate' | 'Advanced';
 
 export interface PracticeChallenge {
   id: string;
   expression: string;
   infix?: string;
   expectedPrefix?: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  difficulty: PracticeDifficulty;
   hint: string;
+  explanation?: string;
 }
+

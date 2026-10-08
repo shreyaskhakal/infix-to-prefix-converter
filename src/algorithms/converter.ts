@@ -172,13 +172,14 @@ export class InfixToPrefixConverter {
       else if (tok.type === 'RIGHT_PAREN') {
         while (!stack.isEmpty() && stack.peek() !== '(') {
           const popped = stack.pop();
-          postfixOutput.push(popped);
+          const outVal = (popped === 'UNARY_MINUS' || popped === '-(unary)' || popped === 'u-') ? '-' : popped;
+          postfixOutput.push(outVal);
           steps.push(
             makeStep(
               '3. POSTFIX ENGINE (STACK)',
               4,
               val,
-              `POP '${popped}' (inside parens)`,
+              `POP '${outVal}' (inside parens)`,
               WhyEngine.explainRightParenPop(popped),
               'POP',
               popped,
@@ -187,6 +188,7 @@ export class InfixToPrefixConverter {
             )
           );
         }
+
 
         // Discard matching '('
         if (!stack.isEmpty() && stack.peek() === '(') {
@@ -207,9 +209,12 @@ export class InfixToPrefixConverter {
         }
       }
 
-      // Case D: Operator (+, -, *, /, %, ^)
-      else if (tok.type === 'OPERATOR') {
+      // Case D: Operator (+, -, *, /, %, ^) or Unary Operator
+      else if (tok.type === 'OPERATOR' || tok.type === 'UNARY_OPERATOR') {
+        const isUnary = tok.isUnary || tok.type === 'UNARY_OPERATOR';
+        const stackOp = isUnary ? '-(unary)' : val;
         const incomingPrec = tok.precedence;
+        const incomingAssoc = tok.associativity;
 
         while (!stack.isEmpty() && stack.peek() !== '(') {
           const topOp = stack.peek();
@@ -217,7 +222,7 @@ export class InfixToPrefixConverter {
 
           // In reversed expression:
           // 1. If stack top has higher precedence -> pop
-          // 2. If equal precedence and operator is right-associative (^) -> pop
+          // 2. If equal precedence and operator is right-associative (^ or unary) -> pop
           // 3. If equal precedence and operator is left-associative -> DO NOT pop!
           let shouldPop = false;
           let reasonText = '';
@@ -226,25 +231,26 @@ export class InfixToPrefixConverter {
 
           if (topPrec > incomingPrec) {
             shouldPop = true;
-            reasonText = WhyEngine.explainHigherPrecedencePop(topOp, topPrec, val, incomingPrec);
+            reasonText = WhyEngine.explainHigherPrecedencePop(topOp, topPrec, stackOp, incomingPrec);
             ruleText = `Higher precedence operator '${topOp}' (${topPrec}) must execute before incoming '${val}' (${incomingPrec}).`;
-          } else if (topPrec === incomingPrec && val === '^') {
+          } else if (topPrec === incomingPrec && (incomingAssoc === 'right' || val === '^' || isUnary)) {
             shouldPop = true;
-            reasonText = WhyEngine.explainEqualPrecedenceRightAssoc(topOp, val);
-            ruleText = "Right-associative exponentiation (^) in reversed stream pops on equal precedence.";
+            reasonText = WhyEngine.explainEqualPrecedenceRightAssoc(topOp, stackOp);
+            ruleText = "Right-associative operator in reversed stream pops on equal precedence.";
           } else {
             break;
           }
 
           if (shouldPop) {
             const popped = stack.pop();
-            postfixOutput.push(popped);
+            const outVal = (popped === 'UNARY_MINUS' || popped === '-(unary)' || popped === 'u-') ? '-' : popped;
+            postfixOutput.push(outVal);
             steps.push(
               makeStep(
                 '3. POSTFIX ENGINE (STACK)',
                 4,
                 val,
-                `POP '${popped}' from stack`,
+                `POP '${outVal}' from stack`,
                 reasonText,
                 'POP',
                 popped,
@@ -259,18 +265,20 @@ export class InfixToPrefixConverter {
         // Push incoming operator onto stack
         const wasEmpty = stack.isEmpty();
         const topOpBeforePush = !stack.isEmpty() ? stack.peek() : undefined;
-        stack.push(val);
+        stack.push(stackOp);
         steps.push(
           makeStep(
             '3. POSTFIX ENGINE (STACK)',
             4,
             val,
             `PUSH '${val}' onto stack`,
-            WhyEngine.explainPush(val, wasEmpty, topOpBeforePush),
+            WhyEngine.explainPush(isUnary ? 'UNARY_MINUS' : val, wasEmpty, topOpBeforePush),
             'PUSH',
+            stackOp,
             val,
-            val,
-            `Operator '${val}' pushed onto stack to await subsequent operands.`,
+            isUnary
+              ? `Unary operator '${val}' pushed onto stack with precedence ${incomingPrec} and right associativity.`
+              : `Operator '${val}' pushed onto stack to await subsequent operands.`,
             topOpBeforePush ? `Precedence(${val}) = ${incomingPrec}` : undefined
           )
         );
@@ -280,13 +288,14 @@ export class InfixToPrefixConverter {
     // Empty remaining operators from stack
     while (!stack.isEmpty()) {
       const finalPopped = stack.pop();
-      postfixOutput.push(finalPopped);
+      const outVal = (finalPopped === 'UNARY_MINUS' || finalPopped === '-(unary)' || finalPopped === 'u-') ? '-' : finalPopped;
+      postfixOutput.push(outVal);
       steps.push(
         makeStep(
           '3. FLUSH STACK',
           4,
           '[END]',
-          `POP '${finalPopped}' (Final)`,
+          `POP '${outVal}' (Final)`,
           WhyEngine.explainFinalPop(finalPopped),
           'POP',
           finalPopped,
@@ -301,8 +310,9 @@ export class InfixToPrefixConverter {
 
     // Check if single-character tokens for compact display
     const isAllSingleChar = tokens.every(
-      (t) => t.type === 'OPERATOR' || t.value.length === 1
+      (t) => t.type === 'OPERATOR' || t.type === 'UNARY_OPERATOR' || t.value.length === 1
     );
+
 
     const prefixString = isAllSingleChar
       ? prefixTokens.join('')

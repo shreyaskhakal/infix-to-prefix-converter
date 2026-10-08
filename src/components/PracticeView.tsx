@@ -1,24 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { Compass, CheckCircle2, XCircle, ArrowRight, RotateCcw, Lightbulb } from 'lucide-react';
+import { Compass, CheckCircle2, XCircle, ArrowRight, RotateCcw, Lightbulb, Sparkles, Flame } from 'lucide-react';
 import { PRACTICE_CHALLENGES } from '../data/constants';
-import type { PracticeChallenge } from '../types';
+import { PracticeGenerator } from '../algorithms/practiceGenerator';
+import type { PracticeChallenge, PracticeDifficulty } from '../types';
 
 export const PracticeView: React.FC = () => {
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  const [customChallenge, setCustomChallenge] = useState<PracticeChallenge | null>(null);
   const [challengeIndex, setChallengeIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [score, setScore] = useState(() => {
-    const saved = localStorage.getItem('dsa_practice_score');
-    return saved ? JSON.parse(saved) : { attempted: 0, correct: 0 };
+  
+  const [score, setScore] = useState<{ attempted: number; correct: number; streak: number; maxStreak: number }>(() => {
+    try {
+      const saved = localStorage.getItem('dsa_practice_score');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          attempted: Number(parsed.attempted) || 0,
+          correct: Number(parsed.correct) || 0,
+          streak: Number(parsed.streak) || 0,
+          maxStreak: Number(parsed.maxStreak) || 0,
+        };
+      }
+    } catch {
+      // Safe fallback
+    }
+    return { attempted: 0, correct: 0, streak: 0, maxStreak: 0 };
   });
 
-  const challenge: PracticeChallenge = PRACTICE_CHALLENGES[challengeIndex] || PRACTICE_CHALLENGES[0];
+  const availableChallenges = PRACTICE_CHALLENGES.filter((c) => {
+    if (selectedDifficulty === 'All') return true;
+    return c.difficulty.toLowerCase() === selectedDifficulty.toLowerCase();
+  });
+
+  const challenge: PracticeChallenge =
+    customChallenge ||
+    availableChallenges[challengeIndex % Math.max(1, availableChallenges.length)] ||
+    PRACTICE_CHALLENGES[0];
+
   const targetInfix = challenge.infix || challenge.expression;
   const expectedPrefix = challenge.expectedPrefix || '';
 
   useEffect(() => {
-    localStorage.setItem('dsa_practice_score', JSON.stringify(score));
+    try {
+      localStorage.setItem('dsa_practice_score', JSON.stringify(score));
+    } catch {
+      // Safe fallback
+    }
   }, [score]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,25 +63,54 @@ export const PracticeView: React.FC = () => {
     setIsCorrect(correct);
     setIsSubmitted(true);
 
-    setScore((prev: { attempted: number; correct: number }) => ({
-      attempted: prev.attempted + 1,
-      correct: correct ? prev.correct + 1 : prev.correct,
-    }));
+    setScore((prev) => {
+      const newStreak = correct ? prev.streak + 1 : 0;
+      return {
+        attempted: prev.attempted + 1,
+        correct: correct ? prev.correct + 1 : prev.correct,
+        streak: newStreak,
+        maxStreak: Math.max(prev.maxStreak, newStreak),
+      };
+    });
   };
 
   const handleNext = () => {
     setUserAnswer('');
     setIsSubmitted(false);
     setIsCorrect(false);
-    setChallengeIndex((prev) => (prev + 1) % PRACTICE_CHALLENGES.length);
+    setCustomChallenge(null);
+    setChallengeIndex((prev) => (prev + 1) % Math.max(1, availableChallenges.length));
+  };
+
+  const handleGenerateRandom = () => {
+    const diff: PracticeDifficulty =
+      selectedDifficulty === 'All' ? 'Medium' : (selectedDifficulty as PracticeDifficulty);
+    const newChallenge = PracticeGenerator.generate(diff);
+    setCustomChallenge(newChallenge);
+    setUserAnswer('');
+    setIsSubmitted(false);
+    setIsCorrect(false);
   };
 
   const resetStats = () => {
-    setScore({ attempted: 0, correct: 0 });
+    setScore({ attempted: 0, correct: 0, streak: 0, maxStreak: 0 });
   };
 
   const accuracy = score.attempted > 0 ? Math.round((score.correct / score.attempted) * 100) : 0;
   const diffLower = challenge.difficulty.toLowerCase();
+
+  const getDifficultyBadge = () => {
+    if (diffLower === 'easy' || diffLower === 'beginner') {
+      return 'bg-emerald-950 text-emerald-400 border-emerald-800';
+    }
+    if (diffLower === 'medium' || diffLower === 'intermediate') {
+      return 'bg-amber-950 text-amber-400 border-amber-800';
+    }
+    if (diffLower === 'hard' || diffLower === 'advanced') {
+      return 'bg-rose-950 text-rose-400 border-rose-800';
+    }
+    return 'bg-purple-950 text-purple-400 border-purple-800';
+  };
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-6 p-4">
@@ -80,14 +139,53 @@ export const PracticeView: React.FC = () => {
             <span className="text-slate-400">Accuracy: </span>
             <strong className="text-indigo-400">{accuracy}%</strong>
           </div>
+          <div className="w-px h-4 bg-slate-800" />
+          <div className="flex items-center gap-1 text-amber-400 font-bold" title="Current streak">
+            <Flame className="w-3.5 h-3.5 fill-amber-400" />
+            <span>{score.streak}</span>
+          </div>
           <button
             onClick={resetStats}
             title="Reset Score"
             className="p-1 rounded text-slate-500 hover:text-slate-300"
+            aria-label="Reset practice stats"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
+      </div>
+
+      {/* Difficulty Tabs & Controls */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+          {['All', 'Easy', 'Medium', 'Hard', 'Expert'].map((diff) => (
+            <button
+              key={diff}
+              onClick={() => {
+                setSelectedDifficulty(diff);
+                setCustomChallenge(null);
+                setChallengeIndex(0);
+                setUserAnswer('');
+                setIsSubmitted(false);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                selectedDifficulty === diff
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              {diff}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={handleGenerateRandom}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-950/70 border border-indigo-800 text-indigo-300 hover:bg-indigo-900/60 transition-all shadow-sm"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Generate Random Expression</span>
+        </button>
       </div>
 
       {/* Challenge Card */}
@@ -95,15 +193,9 @@ export const PracticeView: React.FC = () => {
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800">
-              Challenge {challengeIndex + 1} of {PRACTICE_CHALLENGES.length}
+              {customChallenge ? 'Dynamic Generated' : `Challenge ${(challengeIndex % Math.max(1, availableChallenges.length)) + 1} of ${availableChallenges.length}`}
             </span>
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase ${
-              diffLower === 'beginner' 
-                ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                : diffLower === 'intermediate'
-                ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                : 'bg-rose-950 text-rose-400 border border-rose-800'
-            }`}>
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase border ${getDifficultyBadge()}`}>
               {challenge.difficulty}
             </span>
           </div>
@@ -191,9 +283,17 @@ export const PracticeView: React.FC = () => {
                 <span><strong>Key Rule:</strong> {challenge.hint}</span>
               </div>
             )}
+
+            {challenge.explanation && (
+              <div className="text-xs text-slate-300 pt-1 border-t border-slate-800/80">
+                <strong className="text-indigo-400">Detailed Explanation: </strong>
+                <span>{challenge.explanation}</span>
+              </div>
+            )}
           </div>
         )}
       </div>
     </div>
   );
 };
+

@@ -20,15 +20,39 @@ import { ExpressionValidator } from './algorithms/validator';
 import { EXAMPLE_EXPRESSIONS } from './data/constants';
 import type { ConversionResult, HistoryItem } from './types';
 
+const INITIAL_EXPRESSION = 'A + B * C';
+
+function createHistoryItem(res: ConversionResult): HistoryItem {
+  const ts = Date.now();
+  return {
+    id: `${ts}-${Math.random().toString(36).substring(2, 6)}`,
+    infix: res.infix,
+    prefix: res.prefix,
+    postfix: res.postfix,
+    timestamp: ts,
+    stepCount: res.stats.totalSteps,
+  };
+}
+
 export function App() {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem('dsa_theme');
-    return (saved as 'dark' | 'light') || 'dark';
+    try {
+      const saved = localStorage.getItem('dsa_theme');
+      return (saved as 'dark' | 'light') || 'dark';
+    } catch {
+      return 'dark';
+    }
   });
 
   const [activeTab, setActiveTab] = useState('converter');
-  const [inputExpression, setInputExpression] = useState('A + B * C');
-  const [result, setResult] = useState<ConversionResult | null>(null);
+  const [inputExpression, setInputExpression] = useState(INITIAL_EXPRESSION);
+  const [result, setResult] = useState<ConversionResult | null>(() => {
+    try {
+      return InfixToPrefixConverter.convert(INITIAL_EXPRESSION);
+    } catch {
+      return null;
+    }
+  });
   const [validationError, setValidationError] = useState<string | null>(null);
 
   // Time-machine playback state
@@ -39,16 +63,63 @@ export function App() {
   // History & drawer
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>(() => {
-    const saved = localStorage.getItem('dsa_conversion_history');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('dsa_conversion_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   // Timer reference for auto-play
   const playTimerRef = useRef<number | null>(null);
 
+  // Conversion handler
+  const handleConvert = (expr: string = inputExpression, saveHistory: boolean = true) => {
+    setIsPlaying(false);
+    setValidationError(null);
+
+    // Validate syntax first
+    const val = ExpressionValidator.validate(expr);
+    if (!val.isValid) {
+      setValidationError(val.error);
+      return;
+    }
+
+    try {
+      const res = InfixToPrefixConverter.convert(expr);
+      setResult(res);
+      setCurrentStepIndex(0);
+
+      if (saveHistory) {
+        const newItem = createHistoryItem(res);
+        setHistory((prev) => [newItem, ...prev.slice(0, 24)]);
+      }
+    } catch (err: any) {
+      setValidationError(err.message || 'An unexpected conversion error occurred.');
+    }
+  };
+
+  const handleClear = () => {
+    setInputExpression('');
+    setResult(null);
+    setValidationError(null);
+    setCurrentStepIndex(0);
+    setIsPlaying(false);
+  };
+
+  const loadExample = (ex: string) => {
+    setInputExpression(ex);
+    handleConvert(ex, true);
+  };
+
   // Apply theme class to documentElement
   useEffect(() => {
-    localStorage.setItem('dsa_theme', theme);
+    try {
+      localStorage.setItem('dsa_theme', theme);
+    } catch {
+      // Storage unavailable fallback
+    }
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -58,13 +129,48 @@ export function App() {
 
   // Save history to localStorage
   useEffect(() => {
-    localStorage.setItem('dsa_conversion_history', JSON.stringify(history));
+    try {
+      localStorage.setItem('dsa_conversion_history', JSON.stringify(history));
+    } catch {
+      // Storage unavailable fallback
+    }
   }, [history]);
 
-  // Initial conversion on mount
+
+  // Keyboard navigation shortcuts
   useEffect(() => {
-    handleConvert('A + B * C', false);
-  }, []);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+        return;
+      }
+      if (activeTab !== 'converter' || !result) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setIsPlaying((p) => !p);
+      } else if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        setIsPlaying(false);
+        setCurrentStepIndex((p) => Math.min(result.steps.length - 1, p + 1));
+      } else if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        setIsPlaying(false);
+        setCurrentStepIndex((p) => Math.max(0, p - 1));
+      } else if (e.code === 'Home') {
+        e.preventDefault();
+        setIsPlaying(false);
+        setCurrentStepIndex(0);
+      } else if (e.code === 'End') {
+        e.preventDefault();
+        setIsPlaying(false);
+        setCurrentStepIndex(result.steps.length - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTab, result]);
 
   // Playback timer loop
   useEffect(() => {
@@ -87,51 +193,8 @@ export function App() {
     };
   }, [isPlaying, result, playbackSpeed]);
 
-  const handleConvert = (expr: string = inputExpression, saveHistory: boolean = true) => {
-    setIsPlaying(false);
-    setValidationError(null);
-
-    // Validate syntax first
-    const val = ExpressionValidator.validate(expr);
-    if (!val.isValid) {
-      setValidationError(val.error);
-      return;
-    }
-
-    try {
-      const res = InfixToPrefixConverter.convert(expr);
-      setResult(res);
-      setCurrentStepIndex(0);
-
-      if (saveHistory) {
-        const newItem: HistoryItem = {
-          id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-          infix: res.infix,
-          prefix: res.prefix,
-          postfix: res.postfix,
-          timestamp: Date.now(),
-        };
-        setHistory((prev) => [newItem, ...prev.slice(0, 24)]);
-      }
-    } catch (err: any) {
-      setValidationError(err.message || 'An unexpected conversion error occurred.');
-    }
-  };
-
-  const handleClear = () => {
-    setInputExpression('');
-    setResult(null);
-    setValidationError(null);
-    setCurrentStepIndex(0);
-    setIsPlaying(false);
-  };
-
-  const loadExample = (ex: string) => {
-    setInputExpression(ex);
-    handleConvert(ex, true);
-  };
-
   const currentStep = result && result.steps[currentStepIndex] ? result.steps[currentStepIndex] : undefined;
+
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans transition-colors dark:bg-slate-950 dark:text-slate-100">

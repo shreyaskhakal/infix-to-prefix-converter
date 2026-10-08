@@ -32,6 +32,40 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
     URL.revokeObjectURL(url);
   };
 
+  const downloadCSV = () => {
+    const metaHeader = 'Property,Value\n';
+    const metaRows = [
+      `Infix Expression,"${result.infix.replace(/"/g, '""')}"`,
+      `Prefix Output,"${result.prefix.replace(/"/g, '""')}"`,
+      `Postfix Intermediate,"${result.postfix.replace(/"/g, '""')}"`,
+      `Total Steps,${result.stats.totalSteps}`,
+      `Peak Stack Depth,${result.stats.maxStackSize}`,
+      `Stack Pushes,${result.stats.pushes}`,
+      `Stack Pops,${result.stats.pops}`,
+      `Timestamp,"${new Date().toISOString()}"`,
+    ].join('\n');
+
+    const stepsHeader = '\n\nStep,Stage,Token,Action,Stack,Output,Reason\n';
+    const stepRows = result.steps
+      .map((s) => {
+        const tok = s.currentToken || s.token || '';
+        const st = (s.stackSnapshot || s.stack || []).join(' ');
+        const out = (s.outputBuffer || s.output || []).join(' ');
+        const exp = (s.explanation || s.reason || '').replace(/"/g, '""');
+        return `${s.stepNumber},"${s.stage}","${tok}","${s.action}","${st}","${out}","${exp}"`;
+      })
+      .join('\n');
+
+    const csvContent = metaHeader + metaRows + stepsHeader + stepRows;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dsa_conversion_${result.prefix.replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="bg-slate-900/50 dark:bg-slate-900/80 rounded-2xl border border-slate-800 p-5 shadow-xl flex flex-col gap-4">
       {/* Header */}
@@ -56,14 +90,25 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
           </button>
 
           <button
+            onClick={downloadCSV}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+            title="Export CSV Report"
+          >
+            <Download className="w-3.5 h-3.5" />
+            CSV
+          </button>
+
+          <button
             onClick={downloadReport}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+            title="Export JSON Report"
           >
             <Download className="w-3.5 h-3.5" />
             JSON
           </button>
         </div>
       </div>
+
 
       {/* Main Results Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

@@ -45,8 +45,10 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   const speedOptions = [
     { label: '0.5x', value: 1600 },
     { label: '1.0x', value: 800 },
-    { label: '2.0x', value: 350 },
+    { label: '1.5x', value: 500 },
+    { label: '2.0x', value: 300 },
   ];
+
 
   return (
     <div className="bg-slate-900/50 dark:bg-slate-900/80 rounded-2xl border border-slate-800 p-4 shadow-xl flex flex-col gap-3">

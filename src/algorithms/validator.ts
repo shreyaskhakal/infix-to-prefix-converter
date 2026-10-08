@@ -31,7 +31,19 @@ export class Validator {
       return { isValid: false, error: 'No valid tokens found in expression.', position: 0 };
     }
 
-    // 1. Check for invalid characters in tokens
+    // 1. Check for single operator without operand e.g. "*", "+", "-"
+    if (
+      tokenList.length === 1 &&
+      (this.SUPPORTED_OPERATORS.has(tokenList[0].value) || tokenList[0].type === 'UNARY_OPERATOR')
+    ) {
+      return {
+        isValid: false,
+        error: `Expression cannot end with operator '${tokenList[0].value}' at position ${tokenList[0].position + 1}. Expected an operand.`,
+        position: tokenList[0].position,
+      };
+    }
+
+    // 2. Check for invalid characters and malformed numbers in tokens
     for (const token of tokenList) {
       const isOperator = this.SUPPORTED_OPERATORS.has(token.value);
       const isParen = token.value === '(' || token.value === ')';
@@ -39,6 +51,13 @@ export class Validator {
       const isNumber = /^[0-9]+(\.[0-9]+)?$/.test(token.value);
 
       if (!isOperator && !isParen && !isIdentifier && !isNumber) {
+        if (token.value.split('.').length > 2) {
+          return {
+            isValid: false,
+            error: `Malformed number '${token.value}' at position ${token.position + 1}.`,
+            position: token.position,
+          };
+        }
         return {
           isValid: false,
           error: `Invalid character '${token.value}' at position ${token.position + 1}.`,
@@ -47,7 +66,7 @@ export class Validator {
       }
     }
 
-    // 2. Check Parentheses Balance & Empty Parentheses
+    // 3. Check Parentheses Balance & Empty Parentheses
     const parenStack: number[] = [];
     for (let i = 0; i < tokenList.length; i++) {
       const tok = tokenList[i];
@@ -82,55 +101,73 @@ export class Validator {
       };
     }
 
-    // 3. Check Start and End tokens
+    // 4. Check Start and End tokens
     const first = tokenList[0];
-    if (this.SUPPORTED_OPERATORS.has(first.value)) {
-      return {
-        isValid: false,
-        error: `Expression cannot start with operator '${first.value}' at position ${first.position + 1}.`,
-        position: first.position,
-      };
+    if (this.SUPPORTED_OPERATORS.has(first.value) || first.type === 'OPERATOR') {
+      // Unary minus is allowed at the start of expression (e.g. -A + B, -(A+B))
+      if (first.value === '-' && tokenList.length > 1) {
+        // Valid unary minus start
+      } else {
+        return {
+          isValid: false,
+          error: `Expression cannot start with operator '${first.value}' at position ${first.position + 1}. Expected an operand.`,
+          position: first.position,
+        };
+      }
     }
 
     const last = tokenList[tokenList.length - 1];
-    if (this.SUPPORTED_OPERATORS.has(last.value)) {
+    if (this.SUPPORTED_OPERATORS.has(last.value) || last.type === 'OPERATOR' || last.type === 'UNARY_OPERATOR') {
       return {
         isValid: false,
-        error: `Expression cannot end with operator '${last.value}' at position ${last.position + 1}.`,
+        error: `Expression cannot end with operator '${last.value}' at position ${last.position + 1}. Expected an operand.`,
         position: last.position,
       };
     }
 
-    // 4. Check Adjacent Token Transitions
+    // 5. Check Adjacent Token Transitions
     for (let i = 0; i < tokenList.length - 1; i++) {
       const curr = tokenList[i];
       const next = tokenList[i + 1];
 
-      // Consecutive operators: e.g. A++B or A*+B
-      if (this.SUPPORTED_OPERATORS.has(curr.value) && this.SUPPORTED_OPERATORS.has(next.value)) {
-        return {
-          isValid: false,
-          error: `Operator '${next.value}' cannot appear immediately after '${curr.value}' at position ${next.position + 1}.`,
-          position: next.position,
-        };
+      const currIsOp = this.SUPPORTED_OPERATORS.has(curr.value) || curr.type === 'OPERATOR';
+      const nextIsOp = this.SUPPORTED_OPERATORS.has(next.value) || next.type === 'OPERATOR';
+
+      // Consecutive operators
+      if (currIsOp && nextIsOp) {
+        // Check if next is unary minus e.g. A * -B or A ^ -B
+        if (next.isUnary && next.value === '-' && curr.value !== '-') {
+          // Allowed: binary operator followed by unary minus
+        } else {
+          return {
+            isValid: false,
+            error: `Operator '${next.value}' cannot appear immediately after '${curr.value}' at position ${next.position + 1}. Expected an operand.`,
+            position: next.position,
+          };
+        }
+
       }
 
-      // Operator followed by closing parenthesis: e.g. (A+)
-      if (this.SUPPORTED_OPERATORS.has(curr.value) && next.value === ')') {
+      // Operator followed by closing parenthesis: e.g. (A+) or (A*+)
+      if (currIsOp && next.value === ')') {
         return {
           isValid: false,
-          error: `Operator '${curr.value}' cannot be immediately followed by ')' at position ${curr.position + 1}.`,
+          error: `Operator '${curr.value}' cannot be immediately followed by ')' at position ${curr.position + 1}. Expected an operand.`,
           position: curr.position,
         };
       }
 
-      // Opening parenthesis followed by operator: e.g. (+A)
-      if (curr.value === '(' && this.SUPPORTED_OPERATORS.has(next.value)) {
-        return {
-          isValid: false,
-          error: `'(' cannot be immediately followed by operator '${next.value}' at position ${next.position + 1}.`,
-          position: next.position,
-        };
+      // Opening parenthesis followed by operator: e.g. (+A) or (-B)
+      if (curr.value === '(' && nextIsOp) {
+        if (next.isUnary && next.value === '-') {
+          // Valid unary minus inside parenthesis e.g. (-B)
+        } else {
+          return {
+            isValid: false,
+            error: `'(' cannot be immediately followed by operator '${next.value}' at position ${next.position + 1}. Expected an operand.`,
+            position: next.position,
+          };
+        }
       }
 
       // Consecutive operands: e.g. "A B"
@@ -148,3 +185,4 @@ export class Validator {
 }
 
 export const ExpressionValidator = Validator;
+
